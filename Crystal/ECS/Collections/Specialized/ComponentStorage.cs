@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Crystal.ECS
+namespace Crystal.ECS.Collections.Specialized
 {
     internal class ComponentStorage : IEnumerable<IComponent>
     {

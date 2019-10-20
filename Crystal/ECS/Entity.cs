@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Crystal.ECS.Collections.Specialized;
 
 namespace Crystal.ECS
 {
