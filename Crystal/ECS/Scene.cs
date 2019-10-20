@@ -6,6 +6,7 @@ namespace Crystal.ECS
     {
         internal EntityStorage Entities { get; private set; } = new EntityStorage();
         internal SystemStorage Systems { get; private set; } = new SystemStorage();
+        internal RendererStorage Renderers { get; private set; } = new RendererStorage();
 
         /// <summary>
         /// Add a entity to this scene
@@ -27,6 +28,12 @@ namespace Crystal.ECS
         {
             this.Systems.Add(s);
             return s;
+        }
+
+        public IRenderer Add(IRenderer r)
+        {
+            this.Renderers.Add(r);
+            return r;
         }
 
         /// <summary>
