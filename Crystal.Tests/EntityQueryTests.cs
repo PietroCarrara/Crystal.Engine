@@ -10,7 +10,7 @@ namespace Tests
         [Test]
         public void TestContainsAll()
         {
-            var s = new Scene();
+            var s = new Scene("test");
 
             var eABC = s.Entity()
                 .With(new ComponentA())

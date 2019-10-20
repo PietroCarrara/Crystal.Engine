@@ -22,6 +22,8 @@ namespace Crystal.ECS.Components.Graphical
             }
         }
 
+        public Vector2 position;
+
         public Camera()
         {
             if (Camera.active == null)
@@ -29,7 +31,5 @@ namespace Crystal.ECS.Components.Graphical
                 Camera.active = this;
             }
         }
-
-        public Vector2 position;
     }
 }

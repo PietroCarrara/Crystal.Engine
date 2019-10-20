@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Crystal.ECS.Collections.Specialized;
 
 namespace Crystal.ECS
@@ -7,6 +8,25 @@ namespace Crystal.ECS
         internal EntityStorage Entities { get; private set; } = new EntityStorage();
         internal SystemStorage Systems { get; private set; } = new SystemStorage();
         internal RendererStorage Renderers { get; private set; } = new RendererStorage();
+
+        /// <summary>
+        /// If this scene has already been initialized
+        /// </summary>
+        internal bool Initialized;
+        
+        /// <summary>
+        /// Dictionary of resources
+        /// The idea is that you preload assets into your scene and
+        /// then access them here
+        /// </summary>
+        private Dictionary<string, object> resources = new Dictionary<string, object>();
+
+        public readonly string Name;
+
+        public Scene(string name)
+        {
+            this.Name = name;
+        }
 
         /// <summary>
         /// Add a entity to this scene
@@ -20,7 +40,7 @@ namespace Crystal.ECS
         }
 
         /// <summary>
-        /// Adds a system to this collection
+        /// Adds a system to this scene
         /// </summary>
         /// <param name="s">The system to be added</param>
         /// <returns>The added system</returns>
@@ -30,6 +50,11 @@ namespace Crystal.ECS
             return s;
         }
 
+        /// <summary>
+        /// Adds a renderer to this scene
+        /// </summary>
+        /// <param name="r">The renderer to be added</param>
+        /// <returns>The added renderer</returns>
         public IRenderer Add(IRenderer r)
         {
             this.Renderers.Add(r);
@@ -43,6 +68,22 @@ namespace Crystal.ECS
         public Entity Entity(string name = null)
         {
             return this.Add(new Entity(name));
+        }
+
+        /// <summary>
+        /// Fetch a preloaded resource
+        /// </summary>
+        /// <param name="name">Resource name</param>
+        /// <typeparam name="T">The resource type</typeparam>
+        /// <returns></returns>
+        public T Resource<T>(string name)
+        {
+            return (T)this.resources[name]; 
+        }
+
+        public void AddResource(string name, object res)
+        {
+            this.resources.Add(name, res);
         }
     }
 }

@@ -5,12 +5,15 @@ using System;
 
 namespace Crystal.Engine
 {
-    public class CrystalGame : Game
+    public abstract class BaseGame : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        private SpriteBatch spriteBatch;
 
-        public CrystalGame()
+        public abstract void Update(float delta);
+        public abstract void Render(SpriteBatch sp);
+
+        public BaseGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -19,8 +22,6 @@ namespace Crystal.Engine
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -28,24 +29,23 @@ namespace Crystal.Engine
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            base.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
+            this.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected sealed override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            this.Render(this.spriteBatch);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }

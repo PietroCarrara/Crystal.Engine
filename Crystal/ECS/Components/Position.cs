@@ -5,7 +5,7 @@ namespace Crystal.ECS.Components
 {
     public class Position : IComponent
     {
-        private Vector2 position;
+        private Vector2 position = Vector2.Zero;
 
         public float X
         {
@@ -19,9 +19,12 @@ namespace Crystal.ECS.Components
             set => position.Y = value;
         }
 
-        public Position(Vector2 position)
+        public Position(Vector2? position = null)
         {
-            this.position = position;
+            if (position.HasValue)
+            {
+                this.position = position.Value;
+            }
         }
 
         public Position(float x, float y) : this(new Vector2(x, y))
