@@ -6,7 +6,7 @@ namespace Crystal.ECS.Query
 {
     public class EntityQuery
     {
-        private readonly Func<Entity, bool> selector;
+        protected Func<Entity, bool> selector;
 
         public EntityQuery()
         {
@@ -33,6 +33,40 @@ namespace Crystal.ECS.Query
             return new EntityQuery(
                 this.selector,
                 (e) => e.Components.ContainsAll(components)
+            );
+        }
+
+        /// <summary>
+        /// Filters a entity collection based on a predicate
+        /// </summary>
+        /// <param name="predicate">Entities that return true for this will remain in the collection</param>
+        public EntityQuery Where(Func<Entity, bool> predicate)
+        {
+            return new EntityQuery(
+                this.selector,
+                predicate
+            );
+        }
+
+        /// <summary>
+        /// Finds entities that contain a component AND that component follows a certain predicate
+        /// </summary>
+        /// <param name="predicate">A predicate the component must follow</param>
+        /// <typeparam name="T">The component type</typeparam>
+        public EntityQuery WhereComponent<T>(Func<T, bool> predicate) where T : IComponent
+        {
+            return new EntityQuery(
+                this.selector,
+                (e) => {
+                    T c1 = e.FindFirst<T>();
+
+                    if (c1 == null)
+                    {
+                        return false;
+                    }
+
+                    return predicate(c1);
+                }
             );
         }
     }

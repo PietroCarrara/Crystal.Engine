@@ -46,6 +46,11 @@ namespace Crystal.ECS
             return default(T);
         }
 
+        public IEnumerable<T> FindAll<T>() where T : IComponent
+        {
+            return this.data.OfType<T>();
+        }
+
         /// <summary>
         /// Tells if all the types appear in this collection.
         /// If one type is informed more than once, we look for

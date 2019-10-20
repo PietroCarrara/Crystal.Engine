@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Crystal.ECS
 {
@@ -36,9 +37,19 @@ namespace Crystal.ECS
             return this;
         }
 
-        public T GetComponent<T>() where T : IComponent
+        /// <summary>
+        /// Finds the first component of type T
+        /// </summary>
+        /// <typeparam name="T">The type to look for</typeparam>
+        /// <returns></returns>
+        public T FindFirst<T>() where T : IComponent
         {
             return this.Components.FindFirst<T>();
+        }
+
+        public IEnumerable<T> FindAll<T>() where T : IComponent
+        {
+            return this.Components.FindAll<T>();
         }
     }
 }
