@@ -61,26 +61,40 @@ namespace Crystal.Engine.SceneUtil
 
                 foreach (var component in entity.Components)
                 {
-                    var c = (IComponent)Activator.CreateInstance(
-                        component.Type,
-                        BindingFlags.CreateInstance |
-                        BindingFlags.Public |
-                        BindingFlags.Instance |
-                        BindingFlags.OptionalParamBinding |
-                        BindingFlags.CreateInstance,
-                        null,
-                        loadReferences(
-                            component.CtorArgs,
-                            scene
-                        ),
-                        CultureInfo.CurrentCulture
-                    );
+                    var c = (IComponent)loadObject(component, scene);
 
                     e.Add(c);
                 }
             }
 
             scene.Initialized = true;
+        }
+
+        private object loadObject(ObjectModel o, Scene s)
+        {
+            try
+            {
+                return Activator.CreateInstance(
+                    o.Type,
+                    BindingFlags.CreateInstance |
+                    BindingFlags.Public |
+                    BindingFlags.Instance |
+                    BindingFlags.OptionalParamBinding |
+                    BindingFlags.CreateInstance,
+                    null,
+                    loadReferences(
+                        o.CtorArgs,
+                        s
+                    ),
+                    CultureInfo.CurrentCulture
+                );
+            }
+            catch (MissingMethodException)
+            {
+                throw new Exception("The object you informed could not be created. " +
+                                    $"Is this constructor call right?\n\"{o}\"");
+            }
+
         }
 
         /// <summary>
@@ -93,14 +107,20 @@ namespace Crystal.Engine.SceneUtil
 
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] is Resource r)
+                // args[i] is a object we have to build
+                if (args[i] is ObjectModel c)
                 {
-                    res[i] = scene.Resource<object>(r.Name);
+                    res[i] = loadObject(c, scene);
+
+                    // Edge case: if the object was
+                    // of type Resource, we have to
+                    // load it instead
+                    if (res[i] is Resource r)
+                    {
+                        res[i] = scene.Resource<object>(r.Name);
+                    }
                 }
-                else if (args[i] is ObjectModel c)
-                {
-                    res[i] = loadReferences(c.CtorArgs, scene);
-                }
+                // args[i] is a primitive
                 else
                 {
                     res[i] = args[i];
@@ -143,7 +163,7 @@ namespace Crystal.Engine.SceneUtil
     }
 
     /// <summary>
-    /// A list is just a name associated with a list 
+    /// A list is just a name associated with a list
     /// of objects, that we can hopefuly cast to IComponent
     /// </summary>
     public struct EntityModel
@@ -171,7 +191,7 @@ namespace Crystal.Engine.SceneUtil
             );
 
             res += ")";
-            
+
             return res;
         }
     }

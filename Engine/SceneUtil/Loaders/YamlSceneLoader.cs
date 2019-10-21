@@ -98,16 +98,14 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 return parseEntity(node.Seq());
             }
 
-            Console.WriteLine(node);
-
-            throw new Exception("Invalid entity structure!");
+            throw new YamlException(node.Start, node.End, "Invalid entity structure");
         }
 
         private EntityModel parseEntity(YamlMappingNode map)
         {
             if (map.Children.Count != 1)
             {
-                throw new Exception("Invalid entity structure!");
+                throw new YamlException(map.Start, map.End, "Invalid entity structure");
             }
 
             var node = map.First();
@@ -155,14 +153,18 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 return parseObject(node.Map().Children);
             }
 
-            throw new Exception("Invalid entity structure!");
+            throw new YamlException(node.Start, node.End, "Invalid object structure");
         }
 
         private ObjectModel parseObject(IDictionary<YamlNode, YamlNode> map)
         {
             if (map.Count != 1)
             {
-                throw new Exception("Invalid entity structure!");
+                throw new YamlException(
+                    map.First().Key.Start,
+                    map.First().Key.End,
+                    "Invalid object structure"
+                );
             }
 
             var component = map.First();
@@ -178,7 +180,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
         {
             if (node.NodeType != YamlNodeType.Sequence)
             {
-                throw new Exception("Invalid structure for constructor arguments!");
+                throw new YamlException(node.Start, node.End, "Invalid object structure");
             }
 
             return parseArguments(node.Seq());
@@ -202,7 +204,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 }
                 else
                 {
-                    throw new Exception("Invalid argument structure!");
+                    throw new YamlException(node.Start, node.End, "Invalid argument structure");
                 }
             }
 
@@ -258,17 +260,38 @@ namespace Crystal.Engine.SceneUtil.Loaders
     {
         public static YamlMappingNode Map(this YamlNode self)
         {
-            return (YamlMappingNode)self;
+            try
+            {
+                return (YamlMappingNode)self;
+            }
+            catch (InvalidCastException)
+            {
+                throw new YamlException(self.Start, self.End, "Invalid structure");
+            }
         }
 
         public static YamlSequenceNode Seq(this YamlNode self)
         {
-            return (YamlSequenceNode)self;
+            try
+            {
+                return (YamlSequenceNode)self;
+            }
+            catch (InvalidCastException)
+            {
+                throw new YamlException(self.Start, self.End, "Invalid structure");
+            }
         }
 
         public static YamlScalarNode Val(this YamlNode self)
         {
-            return (YamlScalarNode)self;
+            try
+            {
+                return (YamlScalarNode)self;
+            }
+            catch (InvalidCastException)
+            {
+                throw new YamlException(self.Start, self.End, "Invalid structure");
+            }
         }
 
         public static string String(this YamlScalarNode self)
