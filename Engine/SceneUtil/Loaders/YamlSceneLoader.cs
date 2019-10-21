@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
-using Microsoft.Xna.Framework;
+using Crystal.Engine.Reflection;
 
 namespace Crystal.Engine.SceneUtil.Loaders
 {
@@ -16,6 +16,20 @@ namespace Crystal.Engine.SceneUtil.Loaders
         }
 
         public SceneInitializer FromText(string text)
+        {
+            try
+            {
+                return this.fromText(text);
+            }
+            catch (YamlException e)
+            {
+                throw new Exception("There was an error in your YAML. It may be due " +
+                                    "to a syntax error or just a invalid structure: " +
+                                    $" {e.Message}");
+            }
+        }
+
+        private SceneInitializer fromText(string text)
         {
             var yaml = new YamlStream();
             yaml.Load(new StringReader(text));
@@ -42,7 +56,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 foreach (var system in root["systems"].Seq().Children)
                 {
                     initializer.Systems.Add(
-                        Type.GetType(system.Val().String(), true)
+                        ReflectionUtil.GetType(system.Val().String())
                     );
                 }
             }
@@ -53,7 +67,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 foreach (var renderer in root["renderers"].Seq().Children)
                 {
                     initializer.Renderers.Add(
-                        Type.GetType(renderer.Val().String(), true)
+                        ReflectionUtil.GetType(renderer.Val().String())
                     );
                 }
             }
@@ -132,7 +146,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
             {
                 return new ObjectModel
                 {
-                    Type = Type.GetType(node.Val().String(), true),
+                    Type = ReflectionUtil.GetType(node.Val().String()),
                     CtorArgs = new object[] { }
                 };
             }
@@ -155,7 +169,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
 
             return new ObjectModel
             {
-                Type = Type.GetType(component.Key.Val().String(), true),
+                Type = ReflectionUtil.GetType(component.Key.Val().String()),
                 CtorArgs = parseArguments(component.Value.Seq())
             };
         }
@@ -230,7 +244,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
 
                     return new ObjectModel
                     {
-                        Type = Type.GetType(node.String(), true),
+                        Type = ReflectionUtil.GetType(node.String()),
                         CtorArgs = new object[] { }
                     };
 
