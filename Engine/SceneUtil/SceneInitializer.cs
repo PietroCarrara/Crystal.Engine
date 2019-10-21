@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Collections.Generic;
 using Crystal.ECS;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.SceneUtil
 {
@@ -22,11 +21,6 @@ namespace Crystal.Engine.SceneUtil
 
         public List<Type> Renderers = new List<Type>();
 
-        /// <summary>
-        /// List of Entities
-        /// A Entity is a name string and a List of Components
-        /// A Component is a Type (the Component class) and a List of objects (the constructor parameters)
-        /// </summary>
         public List<EntityModel> Entities = new List<EntityModel>();
 
         public SceneInitializer(string name)
@@ -69,10 +63,10 @@ namespace Crystal.Engine.SceneUtil
                 {
                     var c = (IComponent)Activator.CreateInstance(
                         component.Type,
-                        BindingFlags.CreateInstance|
-                        BindingFlags.Public|
-                        BindingFlags.Instance|
-                        BindingFlags.OptionalParamBinding|
+                        BindingFlags.CreateInstance |
+                        BindingFlags.Public |
+                        BindingFlags.Instance |
+                        BindingFlags.OptionalParamBinding |
                         BindingFlags.CreateInstance,
                         null,
                         loadReferences(
@@ -90,18 +84,22 @@ namespace Crystal.Engine.SceneUtil
         }
 
         /// <summary>
-        /// Replaces objects of type SceneResource with the resource they actually point to
+        /// Instantiates objects from ObjectModels inside the arguments
+        /// Also loads references to scene resources
         /// </summary>
-        /// <returns></returns>
         private object[] loadReferences(object[] args, ECS.Scene scene)
         {
             var res = new object[args.Length];
 
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] is SceneResource r)
+                if (args[i] is Resource r)
                 {
                     res[i] = scene.Resource<object>(r.Name);
+                }
+                else if (args[i] is ObjectModel c)
+                {
+                    res[i] = loadReferences(c.CtorArgs, scene);
                 }
                 else
                 {
@@ -111,17 +109,94 @@ namespace Crystal.Engine.SceneUtil
 
             return res;
         }
+
+        public override string ToString()
+        {
+            var res = "";
+
+            res += $"Name:\n  - {this.Name}\n";
+
+            res += "\nSystems:\n";
+            foreach (var sys in this.Systems)
+            {
+                res += $"  - {sys}\n";
+            }
+
+            res += "\nRenderers:\n";
+            foreach (var rend in this.Renderers)
+            {
+                res += $"  - {rend}\n";
+            }
+
+            res += "\nEntities:\n";
+            foreach (var e in this.Entities)
+            {
+                res += $"  - {e.Name}\n";
+                foreach (var component in e.Components)
+                {
+                    res += $"    - {component}\n";
+                }
+            }
+
+            return res;
+        }
     }
 
+    /// <summary>
+    /// A list is just a name associated with a list 
+    /// of objects, that we can hopefuly cast to IComponent
+    /// </summary>
     public struct EntityModel
     {
         public string Name;
-        public List<ComponentModel> Components;
+        public List<ObjectModel> Components;
     }
 
-    public struct ComponentModel
+    /// <summary>
+    /// A object is basically just it's class and a array
+    /// of parameters we pass to it's constructor
+    /// </summary>
+    public struct ObjectModel
     {
         public Type Type;
         public object[] CtorArgs;
+
+        public override string ToString()
+        {
+            var res = $"new {this.Type}(";
+
+            res += string.Join(
+                ", ",
+                this.CtorArgs.Select(arg => arg.ToString()).ToArray()
+            );
+
+            res += ")";
+            
+            return res;
+        }
+    }
+
+}
+
+// Make the resource type accessible
+// in a namespace that makes sense
+namespace Crystal.Engine
+{
+    /// <summary>
+    /// Represents a reference to a scene resource
+    /// </summary>
+    public struct Resource
+    {
+        public string Name;
+
+        public Resource(string name)
+        {
+            this.Name = name;
+        }
+
+        public override string ToString()
+        {
+            return $"Scene.Resource(\"{this.Name}\")";
+        }
     }
 }

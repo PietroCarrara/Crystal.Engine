@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrystalEngine", "CrystalEngine.csproj", "{15F72045-0358-4076-A45C-ED3EE207686A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal.Engine", "Crystal.Engine.csproj", "{15F72045-0358-4076-A45C-ED3EE207686A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crystal", "Crystal\Crystal.csproj", "{10A23108-3B14-40FD-98B5-71E30C873F4B}"
 EndProject
