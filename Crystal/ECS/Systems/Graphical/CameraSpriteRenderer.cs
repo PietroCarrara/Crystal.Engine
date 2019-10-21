@@ -13,6 +13,7 @@ namespace Crystal.ECS.Systems.Graphical
         public void Render(Scene s, SpriteBatch sp)
         {
             var camera = new EntityQuery()
+                .HasComponents(typeof(Position), typeof(Camera))
                 .WhereComponent<Camera>(c => c.Active)
                 .Run(s)
                 .FirstOrDefault();
@@ -27,6 +28,7 @@ namespace Crystal.ECS.Systems.Graphical
                 .Run(s)
                 .OrderBy((e) => e.FindFirst<Sprite>().Index);
 
+            // Make pairs of sprites and positions
             var pairs = sprites
             .SelectMany((e) =>
             {

@@ -22,8 +22,6 @@ namespace Crystal.ECS.Components.Graphical
             }
         }
 
-        public Vector2 position;
-
         public Camera()
         {
             if (Camera.active == null)
