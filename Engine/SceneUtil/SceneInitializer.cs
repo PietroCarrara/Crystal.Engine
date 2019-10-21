@@ -7,7 +7,7 @@ using Crystal.ECS;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Crystal.Engine.Scenes
+namespace Crystal.Engine.SceneUtil
 {
     public class SceneInitializer
     {
@@ -27,8 +27,7 @@ namespace Crystal.Engine.Scenes
         /// A Entity is a name string and a List of Components
         /// A Component is a Type (the Component class) and a List of objects (the constructor parameters)
         /// </summary>
-        public List<Tuple<string, List<Tuple<Type, List<object>>>>> Entities
-            = new List<Tuple<string, List<Tuple<Type, List<object>>>>>();
+        public List<EntityModel> Entities = new List<EntityModel>();
 
         public SceneInitializer(string name)
         {
@@ -41,7 +40,7 @@ namespace Crystal.Engine.Scenes
         /// Initializes a scene
         /// </summary>
         /// <param name="s">The scene to be initalized</param>
-        public void Initialize(Scene scene, ContentManager content)
+        public void Initialize(ECS.Scene scene, ContentManager content)
         {
             // Load resources
             foreach (var res in this.Resources)
@@ -64,12 +63,12 @@ namespace Crystal.Engine.Scenes
             // Create entities
             foreach (var entity in this.Entities)
             {
-                var e = scene.Entity(entity.Item1);
+                var e = scene.Entity(entity.Name);
 
-                foreach (var component in entity.Item2)
+                foreach (var component in entity.Components)
                 {
                     var c = (IComponent)Activator.CreateInstance(
-                        component.Item1,
+                        component.Type,
                         BindingFlags.CreateInstance|
                         BindingFlags.Public|
                         BindingFlags.Instance|
@@ -77,7 +76,7 @@ namespace Crystal.Engine.Scenes
                         BindingFlags.CreateInstance,
                         null,
                         loadReferences(
-                            component.Item2.ToArray(),
+                            component.CtorArgs,
                             scene
                         ),
                         CultureInfo.CurrentCulture
@@ -94,7 +93,7 @@ namespace Crystal.Engine.Scenes
         /// Replaces objects of type SceneResource with the resource they actually point to
         /// </summary>
         /// <returns></returns>
-        private object[] loadReferences(object[] args, Scene scene)
+        private object[] loadReferences(object[] args, ECS.Scene scene)
         {
             var res = new object[args.Length];
 
@@ -114,4 +113,15 @@ namespace Crystal.Engine.Scenes
         }
     }
 
+    public struct EntityModel
+    {
+        public string Name;
+        public List<ComponentModel> Components;
+    }
+
+    public struct ComponentModel
+    {
+        public Type Type;
+        public object[] CtorArgs;
+    }
 }

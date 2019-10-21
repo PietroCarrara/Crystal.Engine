@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Crystal.ECS;
-using Crystal.Engine.Scenes;
+using Crystal.Engine.SceneUtil;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine

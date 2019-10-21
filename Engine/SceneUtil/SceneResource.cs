@@ -1,4 +1,4 @@
-namespace Crystal.Engine.Scenes
+namespace Crystal.Engine.SceneUtil
 {
     /// <summary>
     /// Denotes a reference to a scene resource
