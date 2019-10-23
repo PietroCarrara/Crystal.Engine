@@ -1,6 +1,5 @@
-using Crystal.ECS;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Crystal.Framework;
+using Crystal.Framework.Graphics;
 
 namespace Crystal.ECS.Components.Graphical
 {
@@ -9,7 +8,7 @@ namespace Crystal.ECS.Components.Graphical
         /// <summary>
         /// The texture of this sprite
         /// </summary>
-        public Texture2D Texture { get; private set; }
+        private ITexture texture;
 
         /// <summary>
         /// Point indicating the origin of the sprite
@@ -22,19 +21,25 @@ namespace Crystal.ECS.Components.Graphical
         /// <summary>
         /// The order in which to draw this sprite
         /// The less it is, the further back it is
-        /// So a background could be on Index -1, and the rest of the game on a bigger Index
+        /// Should be in range [0, 1]
         /// </summary>
-        public int Index = 0;
+        public float Index = 0;
 
         /// <summary>
         /// Sprite rotarion in radians
         /// Flows on a clock-wise direction
+        /// 0       >
+        /// Pi/2    v
+        /// Pi      <
+        /// 3Pi/2   ^
         /// </summary>
         public float Rotation;
 
-        public Sprite(Texture2D texture, Vector2? origin = null)
+        public Vector2 Scale = new Vector2(1);
+
+        public Sprite(ITexture texture, Vector2? origin = null)
         {
-            this.Texture = texture;
+            this.texture = texture;
 
             if (origin.HasValue)
             {
@@ -42,8 +47,21 @@ namespace Crystal.ECS.Components.Graphical
             }
             else
             {
-                this.Origin = new Vector2(texture.Width / 2f, texture.Height / 2f);
+                // Centered origin
+                this.Origin = new Vector2(.5f);
             }
+        }
+
+        public void Draw(Vector2 position)
+        {
+            this.texture.Draw(
+                position,
+                this.Origin,
+                this.Rotation,
+                this.Scale,
+                null, // TODO: SourceRect
+                this.Index
+            );
         }
     }
 }

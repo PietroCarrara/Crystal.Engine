@@ -1,5 +1,4 @@
-using Crystal.ECS;
-using Microsoft.Xna.Framework;
+using Crystal.Framework;
 
 namespace Crystal.ECS.Components
 {

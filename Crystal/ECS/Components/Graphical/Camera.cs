@@ -1,5 +1,3 @@
-using Microsoft.Xna.Framework;
-
 namespace Crystal.ECS.Components.Graphical
 {
     public class Camera : IComponent

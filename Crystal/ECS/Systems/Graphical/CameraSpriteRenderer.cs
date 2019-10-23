@@ -2,15 +2,12 @@ using System.Linq;
 using Crystal.ECS.Query;
 using Crystal.ECS.Components;
 using Crystal.ECS.Components.Graphical;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
 
 namespace Crystal.ECS.Systems.Graphical
 {
     public class CameraSpriteRenderer : IRenderer
     {
-        public void Render(Scene s, SpriteBatch sp)
+        public void Render(Scene s)
         {
             var camera = new EntityQuery()
                 .HasComponents(typeof(Position), typeof(Camera))
@@ -23,35 +20,18 @@ namespace Crystal.ECS.Systems.Graphical
                 return;
             }
 
-            var sprites = new EntityQuery()
+            var entities = new EntityQuery()
                 .HasComponents(typeof(Sprite), typeof(Position))
-                .Run(s)
-                .OrderBy((e) => e.FindFirst<Sprite>().Index);
+                .Run(s);
 
-            // Make pairs of sprites and positions
-            var pairs = sprites
-            .SelectMany((e) =>
+            foreach (var entity in entities)
             {
-                var pos = e.FindFirst<Position>();
+                var pos = entity.FindFirst<Position>();
 
-                return e.FindAll<Sprite>()
-                       .Select(sprite => (Sprite: sprite, Position: pos));
-            })
-            .OrderBy(e => e.Sprite.Index);
-
-            foreach (var entity in pairs)
-            {
-                sp.Draw(
-                    entity.Sprite.Texture,
-                    entity.Position,
-                    null,
-                    Color.White,
-                    entity.Sprite.Rotation,
-                    entity.Sprite.Origin,
-                    new Vector2(1),
-                    SpriteEffects.None,
-                    1f
-                );
+                foreach (var sprite in entity.FindAll<Sprite>())
+                {
+                    sprite.Draw(pos);
+                }
             }
         }
     }
