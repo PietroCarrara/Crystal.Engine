@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace Crystal.Engine.SceneUtil.Loaders
 {
-    public class SceneLoader : ISceneLoader
+    public static class SceneLoader
     {
-        public SceneInitializer FromFilePath(string path)
+        public static SceneInitializer FromFilePath(string path)
         {
             try
             {
@@ -25,11 +25,6 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 throw new Exception($"Type \"{e.TypeName}\" wasn't found. Maybe you are " +
                                     "missing an assembly reference?");
             }
-        }
-
-        public SceneInitializer FromText(string text)
-        {
-            throw new Exception("Can't automatically determine the file format only through text!");
         }
     }
 }

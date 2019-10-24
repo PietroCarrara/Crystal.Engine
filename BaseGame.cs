@@ -1,12 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace Crystal.Engine
 {
     public abstract class BaseGame : Game
     {
+        // HACK: This is not at all a good
+        // way to share the spritebatch
+        public static SpriteBatch SpriteBatch { get; private set; }
+        
         GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
@@ -28,6 +31,7 @@ namespace Crystal.Engine
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            BaseGame.SpriteBatch = spriteBatch;
 
             base.LoadContent();
         }

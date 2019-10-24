@@ -14,6 +14,7 @@ namespace Crystal.Framework.Graphics
         /// <param name="origin">
         ///     This texture's origin. X and Y should be in range
         ///     [-0, 1]. (0, 0) means top left, (1, 1) means bottom right
+        ///     Defaults to 0.5, 0.5
         /// </param>
         /// <param name="rotation">
         ///     The clockwise rotation in radians of this texture.

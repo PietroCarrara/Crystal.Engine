@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using Crystal.ECS.Components;
-using Crystal.ECS.Systems.Graphical;
-using Crystal.ECS.Components.Graphical;
-using Crystal.Engine.Scenes;
+using System.Reflection;
+using Crystal.Engine.SceneUtil.Loaders;
 
 namespace Crystal.Engine
 {
@@ -12,6 +9,8 @@ namespace Crystal.Engine
         [STAThread]
         static void Main()
         {
+            SceneLoader.FromFilePath("scene.yml");
+
             using (var game = new CrystalGame("main"))
                 game.Run();
         }

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Globalization;
 using System.Collections.Generic;
 using Crystal.ECS;
+using Crystal.Engine.Content.Wrappers;
 using Microsoft.Xna.Framework.Content;
 
 namespace Crystal.Engine.SceneUtil
@@ -39,7 +40,10 @@ namespace Crystal.Engine.SceneUtil
             // Load resources
             foreach (var res in this.Resources)
             {
-                scene.AddResource(res.Key, content.Load<object>(res.Value));
+                scene.AddResource(
+                    res.Key,
+                    ContentWrapper.Wrap(content.Load<object>(res.Value))
+                );
             }
 
             // Add systems
@@ -82,7 +86,7 @@ namespace Crystal.Engine.SceneUtil
                     BindingFlags.OptionalParamBinding |
                     BindingFlags.CreateInstance,
                     null,
-                    loadReferences(
+                    loadModels(
                         o.CtorArgs,
                         s
                     ),
@@ -101,7 +105,7 @@ namespace Crystal.Engine.SceneUtil
         /// Instantiates objects from ObjectModels inside the arguments
         /// Also loads references to scene resources
         /// </summary>
-        private object[] loadReferences(object[] args, ECS.Scene scene)
+        private object[] loadModels(object[] args, ECS.Scene scene)
         {
             var res = new object[args.Length];
 
@@ -187,7 +191,19 @@ namespace Crystal.Engine.SceneUtil
 
             res += string.Join(
                 ", ",
-                this.CtorArgs.Select(arg => arg.ToString()).ToArray()
+                this.CtorArgs.Select(arg =>
+                {
+                    if (arg is string)
+                    {
+                        return '"' + arg.ToString() + '"';
+                    }
+                    else if (arg is char)
+                    {
+                        return "'" + arg.ToString() + "'";
+                    }
+                    return arg.ToString();
+                })
+                .ToArray()
             );
 
             res += ")";

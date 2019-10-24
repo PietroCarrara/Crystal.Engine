@@ -1,9 +1,10 @@
+using System;
 using Crystal.Framework;
 using Crystal.Framework.Graphics;
 
 namespace Crystal.ECS.Components.Graphical
 {
-    public class Sprite : IComponent
+    public class Sprite : IComponent, IDisposable
     {
         /// <summary>
         /// The texture of this sprite
@@ -62,6 +63,11 @@ namespace Crystal.ECS.Components.Graphical
                 null, // TODO: SourceRect
                 this.Index
             );
+        }
+
+        public void Dispose()
+        {
+            this.texture.Dispose();
         }
     }
 }

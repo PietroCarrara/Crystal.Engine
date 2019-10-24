@@ -45,7 +45,7 @@ namespace Crystal.Engine
 
             foreach (var renderer in scene.Renderers)
             {
-                renderer.Render(scene, sp);
+                renderer.Render(scene);
             }
         }
     }
