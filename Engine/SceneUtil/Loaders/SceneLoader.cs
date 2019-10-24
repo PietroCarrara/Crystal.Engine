@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace Crystal.Engine.SceneUtil.Loaders
 {
@@ -25,6 +25,18 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 throw new Exception($"Type \"{e.TypeName}\" wasn't found. Maybe you are " +
                                     "missing an assembly reference?");
             }
+        }
+
+        public static List<SceneInitializer> FromDirectoryPath(string path)
+        {
+            var res = new List<SceneInitializer>();
+
+            foreach (var file in Directory.GetFiles(path))
+            {
+                res.Add(SceneLoader.FromFilePath(file));    
+            }
+
+            return res;
         }
     }
 }

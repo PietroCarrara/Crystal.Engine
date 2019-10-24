@@ -9,7 +9,7 @@ namespace Crystal.Engine
         [STAThread]
         static void Main()
         {
-            SceneLoader.FromFilePath("scene.yml");
+            SceneLoader.FromDirectoryPath("Scenes/");
 
             using (var game = new CrystalGame("main"))
                 game.Run();
