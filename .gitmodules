@@ -1,3 +1,6 @@
 [submodule "Crystal"]
 	path = Crystal
 	url = https://github.com/PietroCarrara/Crystal.git
+[submodule "Crystal.Framework"]
+	path = Crystal.Framework
+	url = https://github.com/PietroCarrara/Crystal.Framework.git

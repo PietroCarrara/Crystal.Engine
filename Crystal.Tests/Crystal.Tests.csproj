@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Crystal\Crystal.csproj" />
+    <ProjectReference Include="..\Crystal.Framework\Crystal.Framework.csproj" />
   </ItemGroup>
 
 </Project>
