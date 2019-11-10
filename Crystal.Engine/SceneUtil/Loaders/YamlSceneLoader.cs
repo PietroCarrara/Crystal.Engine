@@ -56,7 +56,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 foreach (var system in root["systems"].Seq().Children)
                 {
                     initializer.Systems.Add(
-                        ReflectionUtil.GetType(system.Val().String())
+                        RegisteredTypes.GetType(system.Val().String())
                     );
                 }
             }
@@ -67,7 +67,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 foreach (var renderer in root["renderers"].Seq().Children)
                 {
                     initializer.Renderers.Add(
-                        ReflectionUtil.GetType(renderer.Val().String())
+                        RegisteredTypes.GetType(renderer.Val().String())
                     );
                 }
             }
@@ -144,7 +144,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
             {
                 return new ObjectModel
                 {
-                    Type = ReflectionUtil.GetType(node.Val().String()),
+                    Type = RegisteredTypes.GetType(node.Val().String()),
                     CtorArgs = new object[] { }
                 };
             }
@@ -171,7 +171,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
 
             return new ObjectModel
             {
-                Type = ReflectionUtil.GetType(component.Key.Val().String()),
+                Type = RegisteredTypes.GetType(component.Key.Val().String()),
                 CtorArgs = parseArguments(component.Value.Seq())
             };
         }
@@ -246,7 +246,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
 
                     return new ObjectModel
                     {
-                        Type = ReflectionUtil.GetType(node.String()),
+                        Type = RegisteredTypes.GetType(node.String()),
                         CtorArgs = new object[] { }
                     };
 

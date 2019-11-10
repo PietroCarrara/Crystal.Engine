@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Crystal.Engine.SceneUtil.Loaders;
+using Crystal.Engine.Reflection;
 
 namespace Crystal.Engine
 {
@@ -9,6 +10,7 @@ namespace Crystal.Engine
         [STAThread]
         static void Main()
         {
+            RegisteredTypes.LoadAllIn("Assemblies/");
             SceneLoader.FromDirectoryPath("Scenes/");
 
             using (var game = new CrystalGame("main"))

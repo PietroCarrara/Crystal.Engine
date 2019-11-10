@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Globalization;
@@ -42,7 +43,13 @@ namespace Crystal.Engine.SceneUtil
             {
                 scene.AddResource(
                     res.Key,
-                    ContentWrapper.Wrap(content.Load<object>(res.Value))
+                    ContentWrapper.Wrap(content.Load<object>(
+                        Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            content.RootDirectory,
+                            res.Value
+                        ) 
+                    ))
                 );
             }
 
