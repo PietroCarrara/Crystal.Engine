@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Reflection;
-using Crystal.Engine.SceneUtil.Loaders;
+using Crystal.Engine.Config;
 using Crystal.Engine.Reflection;
+using Crystal.Engine.SceneUtil.Loaders;
 
 namespace Crystal.Engine
 {
@@ -13,7 +13,9 @@ namespace Crystal.Engine
             RegisteredTypes.LoadAllIn("Assemblies/");
             SceneLoader.FromDirectoryPath("Scenes/");
 
-            using (var game = new CrystalGame("main"))
+            var config = CrystalConfig.FromDirectory("Config/");
+
+            using (var game = new CrystalGame(config))
                 game.Run();
         }
     }

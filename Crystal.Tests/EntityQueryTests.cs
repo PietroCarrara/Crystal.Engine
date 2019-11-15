@@ -1,7 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
-using Crystal.ECS;
-using Crystal.ECS.Query;
+using Crystal.Framework.ECS;
+using Crystal.Framework.ECS.Query;
 
 namespace Tests
 {

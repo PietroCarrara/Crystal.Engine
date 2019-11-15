@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using McMaster.NETCore.Plugins;
-using Crystal.ECS;
+using Crystal.Framework.ECS;
 
 namespace Crystal.Engine.Reflection
 {
@@ -59,7 +59,6 @@ namespace Crystal.Engine.Reflection
 
                 if (t != null)
                 {
-                    // Console.WriteLine($"Loaded assembly type: ${t.Name} -> {assembly.GetName().Name}");
                     return t;
                 }
             }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 using Crystal.Engine.Reflection;
+using Crystal.Engine.Backends.Yaml;
 
 namespace Crystal.Engine.SceneUtil.Loaders
 {
@@ -253,60 +254,6 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 default:
                     throw new Exception("Trying to parse arguments from invalid node!");
             }
-        }
-    }
-
-    internal static class YamlExtensionMethods
-    {
-        public static YamlMappingNode Map(this YamlNode self)
-        {
-            try
-            {
-                return (YamlMappingNode)self;
-            }
-            catch (InvalidCastException)
-            {
-                throw new YamlException(self.Start, self.End, "Invalid structure");
-            }
-        }
-
-        public static YamlSequenceNode Seq(this YamlNode self)
-        {
-            try
-            {
-                return (YamlSequenceNode)self;
-            }
-            catch (InvalidCastException)
-            {
-                throw new YamlException(self.Start, self.End, "Invalid structure");
-            }
-        }
-
-        public static YamlScalarNode Val(this YamlNode self)
-        {
-            try
-            {
-                return (YamlScalarNode)self;
-            }
-            catch (InvalidCastException)
-            {
-                throw new YamlException(self.Start, self.End, "Invalid structure");
-            }
-        }
-
-        public static string String(this YamlScalarNode self)
-        {
-            return self.Value;
-        }
-
-        public static bool TryInt(this YamlScalarNode self, out int val)
-        {
-            return int.TryParse(self.String(), out val);
-        }
-
-        public static bool TryFloat(this YamlScalarNode self, out float val)
-        {
-            return float.TryParse(self.String(), out val);
         }
     }
 }
