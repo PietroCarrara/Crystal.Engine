@@ -24,18 +24,22 @@ namespace Crystal.Engine
             );
         }
 
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+            
+            var scene = scenes.Peek();
+               
+            SceneInitializer.Initializers[scene.Name].Initialize(
+                this,
+                scene,
+                this.Content
+            );
+        } 
+
         public override void Update(float delta)
         {
             var scene = scenes.Peek();
-
-            if (!scene.Initialized)
-            {
-                SceneInitializer.Initializers[scene.Name].Initialize(
-                    this,
-                    scene,
-                    this.Content
-                );
-            }
 
             scene.Input.Update();
 
