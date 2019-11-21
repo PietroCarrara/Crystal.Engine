@@ -37,7 +37,37 @@ namespace Crystal.Engine.Input
 
         public float GetActionStrength(string action)
         {
-            throw new System.NotImplementedException();
+            var act = this.actions.Get(action);
+            
+            var strength = 0f;
+            var totalButtons = 0;
+            
+            foreach (var key in act.Keys)
+            {
+                if (currKbState.IsKeyDown(key))
+                {
+                    strength += 1;
+                    totalButtons++;
+                }
+            }
+
+            foreach (var bt in act.MouseButtons)
+            {
+                if (bt == MouseButtons.Middle)
+                {
+                    strength += currMouseState.ScrollWheelValue - prevMouseState.ScrollWheelValue;
+                    totalButtons++;
+                }
+                else if (currMouseState.IsButtonDown(bt))
+                {
+                    strength += 1;
+                    totalButtons++;
+                }
+            }
+
+            // TODO: Gamepad
+
+            return strength / totalButtons;
         }
 
         public Vector2 GetMousePosition()
@@ -51,11 +81,16 @@ namespace Crystal.Engine.Input
 
         public bool IsActionDown(string action)
         {
+            return this.IsActionDown(action, currKbState, currMouseState);
+        }
+
+        public bool IsActionDown(string action, KeyboardState kState, MouseState mState)
+        {
             var act = this.actions.Get(action);
 
             foreach (var key in act.Keys)
             {
-                if (currKbState.IsKeyUp(key))
+                if (kState.IsKeyUp(key))
                 {
                     return false;
                 }
@@ -63,7 +98,7 @@ namespace Crystal.Engine.Input
 
             foreach (var mb in act.MouseButtons)
             {
-                if (currMouseState.IsButtonUp(mb))
+                if (mState.IsButtonUp(mb))
                 {
                     return false;
                 }
@@ -76,17 +111,24 @@ namespace Crystal.Engine.Input
 
         public bool IsActionUp(string action)
         {
-            return !this.IsActionDown(action);
+            return this.IsActionUp(action, currKbState, currMouseState);
+        }
+
+        public bool IsActionUp(string action, KeyboardState kState, MouseState mState)
+        {
+            return !this.IsActionDown(action, kState, mState);
         }
 
         public bool IsActionPressed(string action)
         {
-            throw new System.NotImplementedException();
+            return this.IsActionUp(action, prevKbState, prevMouseState) &&
+                   this.IsActionDown(action, currKbState, currMouseState);
         }
 
         public bool IsActionReleased(string action)
         {
-            throw new System.NotImplementedException();
+            return this.IsActionDown(action, prevKbState, prevMouseState) &&
+                   this.IsActionUp(action, currKbState, currMouseState);
         }
     }
 }
