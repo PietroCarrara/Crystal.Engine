@@ -41,22 +41,14 @@ namespace Crystal.Engine
         {
             var scene = scenes.Peek();
 
-            scene.Input.Update();
-
-            foreach (var system in scene.Systems)
-            {
-                system.Update(scene, delta);
-            }
+            scene.Update(delta);
         }
 
         public override void Render(SpriteBatch sp)
         {
             var scene = scenes.Peek();
 
-            foreach (var renderer in scene.Renderers)
-            {
-                renderer.Render(scene);
-            }
+            scene.Render();
         }
     }
 }

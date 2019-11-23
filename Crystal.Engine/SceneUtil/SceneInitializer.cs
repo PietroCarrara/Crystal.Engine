@@ -81,6 +81,10 @@ namespace Crystal.Engine.SceneUtil
 
             // Initialize input
             scene.Input = new CrystalInput(g.Config.Actions);
+
+            // Call the user-defined code
+            // for system initialization
+            scene.Initialize();
         }
 
         private object loadObject(ObjectModel o, Scene s)
