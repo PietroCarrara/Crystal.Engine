@@ -2,6 +2,8 @@ using Crystal.Engine.Config;
 using System.Collections.Generic;
 using Crystal.Framework.ECS;
 using Crystal.Engine.SceneUtil;
+using Crystal.Engine.Backends.MonoGame;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine
@@ -20,7 +22,7 @@ namespace Crystal.Engine
             this.MainScene = this.Config.MainScene;
 
             this.scenes.Push(
-                new Scene(this.MainScene)
+                new CrystalScene(this.MainScene, this)
             );
         }
 
@@ -30,11 +32,7 @@ namespace Crystal.Engine
             
             var scene = scenes.Peek();
                
-            SceneInitializer.Initializers[scene.Name].Initialize(
-                this,
-                scene,
-                this.Content
-            );
+            scene.Load();
         } 
 
         public override void Update(float delta)
@@ -47,8 +45,21 @@ namespace Crystal.Engine
         public override void Render(SpriteBatch sp)
         {
             var scene = scenes.Peek();
-
             scene.Render();
+
+            // TODO: Distortionless draw
+            sp.Begin();
+            sp.Draw(
+                scene.Viewport.ToTexture2D(),
+                this.GraphicsDevice.Viewport.Bounds,
+                null,
+                Color.White,
+                0,
+                Vector2.Zero,
+                SpriteEffects.None,
+                0
+            );
+            sp.End();
         }
     }
 }

@@ -1,19 +1,19 @@
 using System;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Crystal.Engine.Content.Wrappers
+namespace Crystal.Engine.Backends.MonoGame.Wrappers
 {
-    public abstract class ContentWrapper<T>
+    public abstract class MonoGameWrapper<T>
     {
-        public T Resource;
+        public T Resource { get; }
 
-        public ContentWrapper(T content)
+        public MonoGameWrapper(T content)
         {
             this.Resource = content;
         }
     }
 
-    public abstract class ContentWrapper
+    public sealed class MonoGameWrapper
     {
         public static object Wrap(object content)
         {

@@ -5,9 +5,10 @@ using System.Reflection;
 using System.Globalization;
 using System.Collections.Generic;
 using Crystal.Framework.ECS;
-using Crystal.Engine.Content.Wrappers;
 using Crystal.Engine.Input;
-using Microsoft.Xna.Framework.Content;
+using Crystal.Engine.Backends.MonoGame.Wrappers;
+using Crystal.Engine.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.SceneUtil
 {
@@ -36,18 +37,19 @@ namespace Crystal.Engine.SceneUtil
         /// <summary>
         /// Initializes a scene
         /// </summary>
+        /// <param name="game">The game</param>
         /// <param name="scene">The scene to be initalized</param>
-        public void Initialize(CrystalGame g, Scene scene, ContentManager content)
+        public void Initialize(CrystalGame game, Scene scene)
         {
             // Load resources
             foreach (var res in this.Resources)
             {
                 scene.AddResource(
                     res.Key,
-                    ContentWrapper.Wrap(content.Load<object>(
+                    MonoGameWrapper.Wrap(game.Content.Load<object>(
                         Path.Combine(
                             Directory.GetCurrentDirectory(),
-                            content.RootDirectory,
+                            game.Content.RootDirectory,
                             res.Value
                         ) 
                     ))
@@ -79,8 +81,20 @@ namespace Crystal.Engine.SceneUtil
                 }
             }
 
+            // Initialize the game drawer
+            scene.SpriteBatch = new CrystalDrawer(game);
+
+            // Initialize viewport as "fullscreen"
+            scene.Viewport = new RenderTarget2DWrapper(
+                new RenderTarget2D(
+                    game.GraphicsDevice,
+                    game.GraphicsDevice.Viewport.Bounds.Width,
+                    game.GraphicsDevice.Viewport.Bounds.Height
+                )
+            );
+
             // Initialize input
-            scene.Input = new CrystalInput(g.Config.Actions);
+            scene.Input = new CrystalInput(game.Config.Actions);
 
             // Call the user-defined code
             // for system initialization

@@ -6,12 +6,9 @@ namespace Crystal.Engine
 {
     public abstract class BaseGame : Game
     {
-        // HACK: This is not at all a good
-        // way to share the spritebatch
-        public static SpriteBatch SpriteBatch { get; private set; }
+        public SpriteBatch SpriteBatch { get; private set; }
         
         GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
 
         public abstract void Update(float delta);
         public abstract void Render(SpriteBatch sp);
@@ -30,8 +27,7 @@ namespace Crystal.Engine
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            BaseGame.SpriteBatch = spriteBatch;
+            this.SpriteBatch = new SpriteBatch(GraphicsDevice);
 
             base.LoadContent();
         }
@@ -45,11 +41,7 @@ namespace Crystal.Engine
 
         protected sealed override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            spriteBatch.Begin();
-            this.Render(this.spriteBatch);
-            spriteBatch.End();
+            this.Render(this.SpriteBatch);
 
             base.Draw(gameTime);
         }
