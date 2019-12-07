@@ -1,3 +1,4 @@
+using System;
 using Crystal.Engine.Config;
 using System.Collections.Generic;
 using Crystal.Framework.ECS;
@@ -24,19 +25,26 @@ namespace Crystal.Engine
             this.scenes.Push(
                 new CrystalScene(this.MainScene, this)
             );
+
+            this.Window.Title = config.Project;
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
-            
+
             var scene = scenes.Peek();
-               
+
             scene.Load();
-        } 
+        }
 
         public override void Update(float delta)
         {
+#if DEBUG
+            this.Window.Title =
+                $"{this.Config.Project} [{Math.Round(1 / delta)} FPS]";
+#endif
+
             var scene = scenes.Peek();
 
             scene.Update(delta);

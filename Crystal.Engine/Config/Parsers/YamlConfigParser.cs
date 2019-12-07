@@ -32,6 +32,11 @@ namespace Crystal.Engine.Config.Parsers
                     config.MainScene = root["main"].Val().String();
                 }
 
+                if (root.Children.ContainsKey("project"))
+                {
+                    config.Project = root["project"].Val().String();
+                }
+
                 if (root.Children.ContainsKey("actions"))
                 {
                     foreach (var actionPair in root["actions"].Map())

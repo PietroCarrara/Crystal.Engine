@@ -7,6 +7,7 @@ namespace Crystal.Engine.Config
     {
         public ActionPool Actions;
         public string MainScene;
+        public string Project; 
 
         public static CrystalConfig FromDirectory(string dir)
         {
@@ -25,7 +26,8 @@ namespace Crystal.Engine.Config
             get => new CrystalConfig
             {
                 Actions = new ActionPool(),
-                MainScene = "main"
+                MainScene = "main",
+                Project = ""
             };
         }
     }
