@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace Crystal.Engine
 {
@@ -18,6 +18,7 @@ namespace Crystal.Engine
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            this.IsFixedTimeStep = false;
         }
 
         protected override void Initialize()
