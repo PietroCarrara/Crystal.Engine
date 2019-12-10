@@ -14,7 +14,7 @@ namespace Crystal.Engine
         public readonly CrystalConfig Config;
         private readonly string MainScene;
 
-        private Stack<Scene> scenes = new Stack<Scene>();
+        public Stack<Scene> scenes { get; private set; } = new Stack<Scene>();
 
         public CrystalGame(CrystalConfig config)
         {
@@ -40,34 +40,39 @@ namespace Crystal.Engine
 
         public override void Update(float delta)
         {
-#if DEBUG
-            this.Window.Title =
-                $"{this.Config.Project} [{Math.Round(1 / delta)} FPS]";
-#endif
+            Scene scene;
 
-            var scene = scenes.Peek();
-
-            scene.Update(delta);
+            if (scenes.TryPeek(out scene))
+            {
+                scene.Update(delta);
+            }
+            else
+            {
+                this.Exit();
+            }
         }
 
         public override void Render(SpriteBatch sp)
         {
-            var scene = scenes.Peek();
-            scene.Render();
+            Scene scene;
 
-            // TODO: Distortionless draw
-            sp.Begin();
-            sp.Draw(
-                scene.Viewport.ToTexture2D(),
-                this.GraphicsDevice.Viewport.Bounds,
-                null,
-                Color.White,
-                0,
-                Vector2.Zero,
-                SpriteEffects.None,
-                0
-            );
-            sp.End();
+            if (scenes.TryPeek(out scene))
+            {
+                scene.Render();
+
+                // TODO: Distortionless draw
+                sp.Begin();
+                sp.Draw(
+                    scene.Viewport.ToTexture2D(),
+                    this.GraphicsDevice.Viewport.Bounds,
+                    null,
+                    Color.White,
+                    0,
+                    Vector2.Zero,
+                    SpriteEffects.None,
+                    0);
+                sp.End();
+            }
         }
     }
 }

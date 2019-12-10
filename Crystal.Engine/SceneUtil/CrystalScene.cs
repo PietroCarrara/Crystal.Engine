@@ -13,6 +13,28 @@ namespace Crystal.Engine.SceneUtil
             this.game = game;
         }
 
+        public override Scene Push(string name)
+        {
+            var scene = new CrystalScene(name, this.game);
+            
+            this.game.scenes.Push(scene);
+            scene.Load();
+
+            return scene;
+        }
+
+        public override Scene Swap(string name)
+        {
+            this.Pop();
+            return this.Push(name);
+        }
+
+        public override void Pop()
+        {
+            this.Unload();
+            this.game.scenes.Pop();
+        }
+
         public override void AfterRender()
         {
             base.AfterRender();

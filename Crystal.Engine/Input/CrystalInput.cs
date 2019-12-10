@@ -5,11 +5,12 @@ using Crystal.Framework;
 namespace Crystal.Engine.Input
 {
     public class CrystalInput : IInput
-    {
+    {   
         private ActionPool actions;
         
-        private KeyboardState prevKbState, currKbState;
-        private MouseState prevMouseState, currMouseState;
+        // Keys should be synced for every input object
+        private static KeyboardState prevKbState, currKbState;
+        private static MouseState prevMouseState, currMouseState;
 
         public CrystalInput(ActionPool ap)
         {
