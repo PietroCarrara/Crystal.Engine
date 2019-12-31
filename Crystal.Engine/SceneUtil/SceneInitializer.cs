@@ -51,7 +51,7 @@ namespace Crystal.Engine.SceneUtil
                             Directory.GetCurrentDirectory(),
                             game.Content.RootDirectory,
                             res.Value
-                        ) 
+                        )
                     ))
                 );
             }

@@ -52,13 +52,13 @@ namespace Crystal.Engine
             }
         }
 
-        public override void Render(SpriteBatch sp)
+        public override void Render(SpriteBatch sp, float delta)
         {
             Scene scene;
 
             if (scenes.TryPeek(out scene))
             {
-                scene.Render();
+                scene.Render(delta);
 
                 // TODO: Distortionless draw
                 sp.Begin();

@@ -11,7 +11,7 @@ namespace Crystal.Engine
         GraphicsDeviceManager graphics;
 
         public abstract void Update(float delta);
-        public abstract void Render(SpriteBatch sp);
+        public abstract void Render(SpriteBatch sp, float delta);
 
         public BaseGame()
         {
@@ -42,7 +42,7 @@ namespace Crystal.Engine
 
         protected sealed override void Draw(GameTime gameTime)
         {
-            this.Render(this.SpriteBatch);
+            this.Render(this.SpriteBatch, (float)gameTime.ElapsedGameTime.TotalSeconds);
 
             base.Draw(gameTime);
         }

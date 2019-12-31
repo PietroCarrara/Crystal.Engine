@@ -1,5 +1,6 @@
 using System;
 using Crystal.Framework.Graphics;
+using Crystal.Framework.ECS.Components.Graphical;
 using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -13,9 +14,21 @@ namespace Crystal.Engine.Backends.MonoGame
             {
                 return r.Resource;
             }
-            else if (self is Texture2DWrapper s)
+            else if (self is Texture2DWrapper tex)
             {
-                return s.Resource;
+                return tex.Resource;
+            }
+            else if (self is Sprite spr)
+            {
+                return spr.Texture.ToTexture2D();
+            }
+            else if (self is SpriteAnimation sprAnim)
+            {
+                return sprAnim.Animation.ToTexture2D();
+            }
+            else if (self is SpriteSheetAnimation sprShtAnim)
+            {
+                return sprShtAnim.Texture.ToTexture2D();
             }
 
             throw new Exception("Could not cast IDrawable to Texture2D!");

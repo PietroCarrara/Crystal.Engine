@@ -34,6 +34,7 @@ namespace Crystal.Engine.Graphics
         public void Draw(
             IDrawable texture,
             Vector2 position,
+            float delta,
             Vector2? origin = null,
             float rotation = 0,
             Vector2? scale = null,
@@ -58,7 +59,6 @@ namespace Crystal.Engine.Graphics
                 SpriteEffects.None,
                 0
             );
-
         }
 
         public void EndDraw()
