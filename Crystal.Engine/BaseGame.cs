@@ -18,7 +18,7 @@ namespace Crystal.Engine
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            this.IsFixedTimeStep = false;
+            this.IsFixedTimeStep = true;
         }
 
         protected override void Initialize()

@@ -47,7 +47,7 @@ namespace Crystal.Engine.SceneUtil
             base.BeforeRender();
 
             this.game.GraphicsDevice.SetRenderTarget(((RenderTarget2DWrapper)this.Viewport).Resource);
-            game.GraphicsDevice.Clear(Color.CornflowerBlue);
+            game.GraphicsDevice.Clear(Color.Transparent);
         }
 
         public override void Load()

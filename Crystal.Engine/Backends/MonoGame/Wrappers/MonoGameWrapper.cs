@@ -1,4 +1,6 @@
 using System;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.Backends.MonoGame.Wrappers
@@ -20,6 +22,18 @@ namespace Crystal.Engine.Backends.MonoGame.Wrappers
             if (content is Texture2D t)
             {
                 return new Texture2DWrapper(t);
+            }
+            if (content is SoundEffect se)
+            {
+                return new SoundEffectWrapper(se);
+            }
+            if (content is Song s)
+            {
+                return new SongWrapper(s);
+            }
+            if (content is RenderTarget2D rt2d)
+            {
+                return new RenderTarget2DWrapper(rt2d);
             }
 
             throw new Exception($"Content of type {content.GetType()} can't be wrapped!");
