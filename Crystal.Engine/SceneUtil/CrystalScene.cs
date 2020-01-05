@@ -1,6 +1,7 @@
 using Crystal.Framework.ECS;
-using Crystal.Engine.Backends.MonoGame.Wrappers;
+using Crystal.Engine.Backends.MonoGame;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.SceneUtil
 {
@@ -17,7 +18,7 @@ namespace Crystal.Engine.SceneUtil
         {
             var scene = new CrystalScene(name, this.game);
             
-            this.game.scenes.Push(scene);
+            this.game.Scenes.Push(scene);
             scene.Load();
 
             return scene;
@@ -32,7 +33,7 @@ namespace Crystal.Engine.SceneUtil
         public override void Pop()
         {
             this.Unload();
-            this.game.scenes.Pop();
+            this.game.Scenes.Pop();
         }
 
         public override void AfterRender()
@@ -46,8 +47,8 @@ namespace Crystal.Engine.SceneUtil
         {
             base.BeforeRender();
 
-            this.game.GraphicsDevice.SetRenderTarget(((RenderTarget2DWrapper)this.Viewport).Resource);
-            game.GraphicsDevice.Clear(Color.Transparent);
+            this.game.GraphicsDevice.SetRenderTarget((RenderTarget2D)this.Viewport.ToTexture2D());
+            game.GraphicsDevice.Clear(Color.CornflowerBlue);
         }
 
         public override void Load()

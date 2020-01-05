@@ -14,7 +14,7 @@ namespace Crystal.Engine
         public readonly CrystalConfig Config;
         private readonly string MainScene;
 
-        public Stack<Scene> scenes { get; private set; } = new Stack<Scene>();
+        public Stack<Scene> Scenes { get; private set; } = new Stack<Scene>();
 
         public CrystalGame(CrystalConfig config)
         {
@@ -22,18 +22,19 @@ namespace Crystal.Engine
 
             this.MainScene = this.Config.MainScene;
 
-            this.scenes.Push(
+            this.Scenes.Push(
                 new CrystalScene(this.MainScene, this)
             );
 
             this.Window.Title = config.Project;
+            this.Window.AllowUserResizing = true;
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
 
-            var scene = scenes.Peek();
+            var scene = Scenes.Peek();
 
             scene.Load();
         }
@@ -42,7 +43,7 @@ namespace Crystal.Engine
         {
             Scene scene;
 
-            if (scenes.TryPeek(out scene))
+            if (Scenes.TryPeek(out scene))
             {
                 scene.Update(delta);
             }
@@ -54,17 +55,39 @@ namespace Crystal.Engine
 
         public override void Render(SpriteBatch sp, float delta)
         {
+#if DEBUG
+            this.Window.Title = $"{this.Config.Project} [{Math.Floor(1 / delta)} FPS]";
+#endif
+
             Scene scene;
 
-            if (scenes.TryPeek(out scene))
+            if (Scenes.TryPeek(out scene))
             {
                 scene.Render(delta);
 
-                // TODO: Distortionless draw
+                this.GraphicsDevice.Clear(Color.Black);
+                var tex = scene.Viewport.ToTexture2D();
+
+                // Letterboxing
+                Rectangle targetRect = new Rectangle();
+                (_, _, targetRect.Width, targetRect.Height) = this.GraphicsDevice.Viewport.Bounds;
+
+                var scaleY = tex.Width / (float)targetRect.Width;
+                var scaleX = tex.Height / (float)targetRect.Height;
+                var scale = Math.Max(scaleX, scaleY);
+
+                var width = (int)(tex.Width / scale);
+                var height = (int)(tex.Height / scale);
+                
+                targetRect = new Rectangle((targetRect.Width - width) / 2,
+                                           (targetRect.Height - height) / 2,
+                                           width,
+                                           height);
+
                 sp.Begin();
                 sp.Draw(
-                    scene.Viewport.ToTexture2D(),
-                    this.GraphicsDevice.Viewport.Bounds,
+                    tex,
+                    targetRect,
                     null,
                     Color.White,
                     0,

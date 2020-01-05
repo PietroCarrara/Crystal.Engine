@@ -4,11 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Globalization;
 using System.Collections.Generic;
+using Crystal.Framework;
 using Crystal.Framework.ECS;
 using Crystal.Engine.Input;
 using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Crystal.Engine.Graphics;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.SceneUtil
 {
@@ -85,13 +85,11 @@ namespace Crystal.Engine.SceneUtil
             scene.SpriteBatch = new CrystalDrawer(game);
 
             // Initialize viewport as "fullscreen"
-            scene.Viewport = new RenderTarget2DWrapper(
-                new RenderTarget2D(
-                    game.GraphicsDevice,
-                    game.GraphicsDevice.Viewport.Bounds.Width,
-                    game.GraphicsDevice.Viewport.Bounds.Height
-                )
-            );
+            var size = new Point(game.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                                 game.GraphicsDevice.PresentationParameters.BackBufferHeight);
+            scene.Viewport = new CrystalSceneViewport(game.GraphicsDevice, size, scene);
+            // TODO: Set scene resolution in scene file
+            scene.Viewport.SetSize(new Point(1280, 720));
 
             // Initialize input
             scene.Input = new CrystalInput(game.Config.Actions);

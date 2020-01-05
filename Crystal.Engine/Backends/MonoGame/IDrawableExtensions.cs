@@ -2,6 +2,7 @@ using System;
 using Crystal.Framework.Graphics;
 using Crystal.Framework.ECS.Components.Graphical;
 using Crystal.Engine.Backends.MonoGame.Wrappers;
+using Crystal.Engine.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.Backends.MonoGame
@@ -17,6 +18,10 @@ namespace Crystal.Engine.Backends.MonoGame
             else if (self is Texture2DWrapper tex)
             {
                 return tex.Resource;
+            }
+            else if (self is CrystalSceneViewport sceneViewport)
+            {
+                return sceneViewport.Texture;
             }
             else if (self is Sprite spr)
             {

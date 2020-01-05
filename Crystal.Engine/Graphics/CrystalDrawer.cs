@@ -1,6 +1,7 @@
 using System;
 using Crystal.Framework;
 using Crystal.Framework.Graphics;
+using Crystal.Framework.Math;
 using Crystal.Engine.Backends.MonoGame;
 using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,7 +21,7 @@ namespace Crystal.Engine.Graphics
             this.spriteBatch = game.SpriteBatch;
         }
 
-        public void BeginDraw(TextureSlice? viewport = null)
+        public void BeginDraw(TextureSlice? viewport = null, Matrix4 transformMatrix = null)
         {
             if (viewport.HasValue)
             {
@@ -28,18 +29,18 @@ namespace Crystal.Engine.Graphics
                 this.game.GraphicsDevice.Viewport = new Viewport(viewport.Value.ToMonoGame());
             }
 
-            this.spriteBatch.Begin();
+            var matrix = transformMatrix?.ToMonoGame();
+
+            this.spriteBatch.Begin(transformMatrix: matrix);
         }
 
-        public void Draw(
-            IDrawable texture,
-            Vector2 position,
-            float delta,
-            Vector2? origin = null,
-            float rotation = 0,
-            Vector2? scale = null,
-            TextureSlice? sourceRectangle = null
-        )
+        public void Draw(IDrawable texture,
+                         Vector2 position,
+                         float delta,
+                         Vector2? origin = null,
+                         float rotation = 0,
+                         Vector2? scale = null,
+                         TextureSlice? sourceRectangle = null)
         {
             var tex = texture.ToTexture2D();
 
