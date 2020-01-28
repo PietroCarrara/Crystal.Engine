@@ -216,6 +216,8 @@ namespace Crystal.Engine.SceneUtil.Loaders
         /// Casts a scalar node to a C# object following the rules:
         /// Single-Length, single quoted strings become char
         /// Else, quoted (single or double), literal or folded values become strings
+        /// Else, plain values equal to the string "null" become null
+        /// Else, plain values that start with "~" become scene resources
         /// Else, plain values that can be cast to int become int
         /// Else, plain values that can be cast to float become float
         /// Else, plain values are cast to a object using the parameterless constructor
@@ -238,6 +240,20 @@ namespace Crystal.Engine.SceneUtil.Loaders
                     return node.String();
 
                 case ScalarStyle.Plain:
+                    if (node.String() == "null")
+                    {
+                        return null;
+                    }
+
+                    if (node.String().StartsWith("~"))
+                    {
+                        return new ObjectModel
+                        {
+                            Type = typeof(Resource),
+                            CtorArgs = new Object[] { node.String().Substring(1) }
+                        };
+                    }
+                
                     int i;
                     float f;
                     if (node.TryInt(out i))
