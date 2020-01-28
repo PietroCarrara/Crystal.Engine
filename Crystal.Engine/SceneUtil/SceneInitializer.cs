@@ -87,6 +87,7 @@ namespace Crystal.Engine.SceneUtil
             // Initialize viewport as "fullscreen"
             var size = new Point(game.GraphicsDevice.PresentationParameters.BackBufferWidth,
                                  game.GraphicsDevice.PresentationParameters.BackBufferHeight);
+            
             scene.Viewport = new CrystalSceneViewport(game.GraphicsDevice, size, scene);
             // TODO: Set scene resolution in scene file
             scene.Viewport.SetSize(new Point(1280, 720));
@@ -226,7 +227,7 @@ namespace Crystal.Engine.SceneUtil
                     {
                         return "'" + arg.ToString() + "'";
                     }
-                    return arg.ToString();
+                    return arg != null ? arg.ToString() : "null";
                 })
                 .ToArray()
             );

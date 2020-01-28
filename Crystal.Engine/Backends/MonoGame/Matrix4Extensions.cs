@@ -7,7 +7,7 @@ namespace Crystal.Engine.Backends.MonoGame
     {
         public static Matrix ToMonoGame(this Matrix4 self)
         {
-            var data = self.Data;
+            var data = self.ToFloatArray();
             
             return new Matrix(
                 data[0, 0],
@@ -23,7 +23,7 @@ namespace Crystal.Engine.Backends.MonoGame
                 data[2, 2],
                 data[2, 3],
                 data[3, 0],
-                data[2, 1],
+                data[3, 1],
                 data[3, 2],
                 data[3, 3]
             );
