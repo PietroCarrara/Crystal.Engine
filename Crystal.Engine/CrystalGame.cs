@@ -2,6 +2,7 @@ using System;
 using Crystal.Engine.Config;
 using System.Collections.Generic;
 using Crystal.Framework.ECS;
+using Crystal.Engine.Graphics;
 using Crystal.Engine.SceneUtil;
 using Crystal.Engine.Backends.MonoGame;
 using Microsoft.Xna.Framework;
@@ -12,9 +13,10 @@ namespace Crystal.Engine
     public sealed class CrystalGame : BaseGame
     {
         public readonly CrystalConfig Config;
-        private readonly string MainScene;
-
         public Stack<Scene> Scenes { get; private set; } = new Stack<Scene>();
+        public ICrystalScaler Scaler { get; private set; }
+
+        private readonly string MainScene;
 
         public CrystalGame(CrystalConfig config)
         {
@@ -25,6 +27,8 @@ namespace Crystal.Engine
             this.Scenes.Push(
                 new CrystalScene(this.MainScene, this)
             );
+
+            this.Scaler = CrystalScalerFactory.FromStrategy(config.ScaleStrategy, this);
 
             this.Window.Title = config.Project;
             this.Window.AllowUserResizing = true;
@@ -68,21 +72,7 @@ namespace Crystal.Engine
                 this.GraphicsDevice.Clear(Color.Black);
                 var tex = scene.Viewport.ToTexture2D();
 
-                // Letterboxing
-                Rectangle targetRect = new Rectangle();
-                (_, _, targetRect.Width, targetRect.Height) = this.GraphicsDevice.Viewport.Bounds;
-
-                var scaleY = tex.Width / (float)targetRect.Width;
-                var scaleX = tex.Height / (float)targetRect.Height;
-                var scale = Math.Max(scaleX, scaleY);
-
-                var width = (int)(tex.Width / scale);
-                var height = (int)(tex.Height / scale);
-                
-                targetRect = new Rectangle((targetRect.Width - width) / 2,
-                                           (targetRect.Height - height) / 2,
-                                           width,
-                                           height);
+                var targetRect = this.Scaler.Scale(tex.Width, tex.Height);
 
                 sp.Begin();
                 sp.Draw(

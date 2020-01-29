@@ -93,7 +93,7 @@ namespace Crystal.Engine.SceneUtil
             scene.Viewport.SetSize(new Point(1280, 720));
 
             // Initialize input
-            scene.Input = new CrystalInput(game.Config.Actions);
+            scene.Input = new CrystalInput(game, scene);
 
             // Call the user-defined code
             // for system initialization

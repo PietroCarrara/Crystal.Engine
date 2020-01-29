@@ -1,20 +1,28 @@
+using System;
 using Microsoft.Xna.Framework.Input;
-using Crystal.Framework.Input;
 using Crystal.Framework;
+using Crystal.Framework.ECS;
+using Crystal.Framework.Input;
+using Crystal.Engine.Backends.MonoGame;
 
 namespace Crystal.Engine.Input
 {
     public class CrystalInput : IInput
-    {   
-        private ActionPool actions;
-        
+    {
+        private readonly ActionPool actions;
+        private readonly Scene scene;
+        private readonly CrystalGame game;
+
         // Keys should be synced for every input object
         private static KeyboardState prevKbState, currKbState;
         private static MouseState prevMouseState, currMouseState;
 
-        public CrystalInput(ActionPool ap)
+        public CrystalInput(CrystalGame game, Scene scene)
         {
-            this.actions = ap;
+            this.scene = scene;
+            this.game = game;
+
+            this.actions = game.Config.Actions;
         }
 
         public void Update()
@@ -39,10 +47,10 @@ namespace Crystal.Engine.Input
         public float GetActionStrength(string action)
         {
             var act = this.actions.Get(action);
-            
+
             var strength = 0f;
             var totalButtons = 0;
-            
+
             foreach (var key in act.Keys)
             {
                 if (currKbState.IsKeyDown(key))
@@ -73,11 +81,16 @@ namespace Crystal.Engine.Input
 
         public Vector2 GetMousePosition()
         {
-            return new Vector2
-            {
-                X = currMouseState.X,
-                Y = currMouseState.Y,
-            };
+            var rect = game.Scaler.Scale((int)scene.Size.X, (int)scene.Size.Y);
+
+            // Position relative to the top-left corner of the screen
+            var relativePosition = currMouseState.Position - rect.Location;
+
+            // How much of the screen has the mouse "walked"
+            var percentagePosition = relativePosition.ToVector2() / rect.Size.ToVector2();
+
+            // Scale it to the scene
+            return new Vector2(percentagePosition.X * scene.Size.X, percentagePosition.Y * scene.Size.Y);
         }
 
         public bool IsActionDown(string action)

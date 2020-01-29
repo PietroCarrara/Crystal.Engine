@@ -1,5 +1,6 @@
 using System.IO;
 using Crystal.Engine.Input;
+using Crystal.Engine.Graphics;
 
 namespace Crystal.Engine.Config
 {
@@ -7,7 +8,8 @@ namespace Crystal.Engine.Config
     {
         public ActionPool Actions;
         public string MainScene;
-        public string Project; 
+        public string Project;
+        public ScaleStrategy ScaleStrategy;
 
         public static CrystalConfig FromDirectory(string dir)
         {
@@ -27,7 +29,8 @@ namespace Crystal.Engine.Config
             {
                 Actions = new ActionPool(),
                 MainScene = "main",
-                Project = ""
+                Project = "",
+                ScaleStrategy = ScaleStrategy.LetterBoxing,
             };
         }
     }
