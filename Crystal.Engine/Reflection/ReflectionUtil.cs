@@ -3,8 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
-using McMaster.NETCore.Plugins;
-using Crystal.Framework.ECS;
 
 namespace Crystal.Engine.Reflection
 {
@@ -26,13 +24,16 @@ namespace Crystal.Engine.Reflection
             var files = Directory.GetFiles(dir);
             foreach (var file in files.Where(f => f.EndsWith(".dll")))
             {
-                var loader = PluginLoader.CreateFromAssemblyFile(
-                    file
-                );
+                var fileBytes = File.ReadAllBytes(file);
+                byte[] pdbBytes = null;
 
-                loadedAssemblies.Add(
-                    loader.LoadDefaultAssembly()
-                );
+                var pdbPath = Path.ChangeExtension(file, ".pdb");
+                if (File.Exists(pdbPath))
+                {
+                    pdbBytes = File.ReadAllBytes(pdbPath);
+                }                
+                
+                loadedAssemblies.Add(Assembly.Load(fileBytes, pdbBytes));
             }
         }
 
