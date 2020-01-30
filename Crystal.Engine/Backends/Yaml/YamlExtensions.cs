@@ -1,3 +1,4 @@
+using System.Globalization;
 using System;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
@@ -49,12 +50,13 @@ namespace Crystal.Engine.Backends.Yaml
 
         public static bool TryInt(this YamlScalarNode self, out int val)
         {
-            return int.TryParse(self.String(), out val);
+            return int.TryParse(self.String(), NumberStyles.Number, CultureInfo.InvariantCulture, out val);
+
         }
 
         public static bool TryFloat(this YamlScalarNode self, out float val)
         {
-            return float.TryParse(self.String(), out val);
+            return float.TryParse(self.String(), NumberStyles.Float, CultureInfo.InvariantCulture, out val);
         }
     }
 }

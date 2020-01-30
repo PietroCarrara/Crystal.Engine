@@ -21,9 +21,9 @@ namespace Crystal.Engine.SceneUtil
 
         public Dictionary<string, string> Resources = new Dictionary<string, string>();
 
-        public List<Type> Systems = new List<Type>();
+        public List<ObjectModel> Systems = new List<ObjectModel>();
 
-        public List<Type> Renderers = new List<Type>();
+        public List<ObjectModel> Renderers = new List<ObjectModel>();
 
         public List<EntityModel> Entities = new List<EntityModel>();
 
@@ -59,13 +59,15 @@ namespace Crystal.Engine.SceneUtil
             // Add systems
             foreach (var system in this.Systems)
             {
-                scene.Add((ISystem)Activator.CreateInstance(system));
+                var s = loadObject(system, scene);
+                scene.Add((ISystem)s);
             }
 
             // Add renderers
             foreach (var renderer in this.Renderers)
             {
-                scene.Add((IRenderer)Activator.CreateInstance(renderer));
+                var r = loadObject(renderer, scene);
+                scene.Add((IRenderer)r);
             }
 
             // Create entities
@@ -104,6 +106,16 @@ namespace Crystal.Engine.SceneUtil
         {
             try
             {
+                if (o.Type.IsEnum)
+                {
+                    if (o.CtorArgs.Length == 1 && o.CtorArgs[0] is string enumValue)
+                    {
+                        return Enum.Parse(o.Type, enumValue);
+                    }
+
+                    throw new Exception("Invalid number of arguments to enum!");
+                }
+                
                 return Activator.CreateInstance(
                     o.Type,
                     BindingFlags.CreateInstance |
@@ -124,7 +136,6 @@ namespace Crystal.Engine.SceneUtil
                 throw new Exception("The object you informed could not be created. " +
                                     $"Is this constructor call right?\n\"{o}\"");
             }
-
         }
 
         /// <summary>

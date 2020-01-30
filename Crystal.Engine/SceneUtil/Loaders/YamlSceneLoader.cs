@@ -56,20 +56,57 @@ namespace Crystal.Engine.SceneUtil.Loaders
             {
                 foreach (var system in root["systems"].Seq().Children)
                 {
-                    initializer.Systems.Add(
-                        RegisteredTypes.GetType(system.Val().String())
-                    );
+                    switch (system.NodeType)
+                    {
+                        case YamlNodeType.Scalar:
+                            initializer.Systems.Add(
+                                new ObjectModel
+                                {
+                                    Type = RegisteredTypes.GetType(system.Val().String()),
+                                    CtorArgs = new object[] { },
+                                }
+                            );
+                            break;
+                        case YamlNodeType.Mapping:
+                            initializer.Systems.Add(
+                                new ObjectModel
+                                {
+                                    Type = RegisteredTypes.GetType(system.Map().First().Key.Val().String()),
+                                    CtorArgs = parseArguments(system.Map().First().Value),
+                                }
+                            );
+                            break;
+
+                    }
                 }
             }
 
-            // Add systems
+            // Add renderers
             if (root.Children.ContainsKey("renderers"))
             {
                 foreach (var renderer in root["renderers"].Seq().Children)
                 {
-                    initializer.Renderers.Add(
-                        RegisteredTypes.GetType(renderer.Val().String())
-                    );
+                    switch (renderer.NodeType)
+                    {
+                        case YamlNodeType.Scalar:
+                            initializer.Renderers.Add(
+                                new ObjectModel
+                                {
+                                    Type = RegisteredTypes.GetType(renderer.Val().String()),
+                                    CtorArgs = new object[] { },
+                                }
+                            );
+                            break;
+                        case YamlNodeType.Mapping:
+                            initializer.Renderers.Add(
+                                new ObjectModel
+                                {
+                                    Type = RegisteredTypes.GetType(renderer.Map().First().Key.Val().String()),
+                                    CtorArgs = parseArguments(renderer.Map().First().Value),
+                                }
+                            );
+                            break;
+                    }
                 }
             }
 
@@ -253,7 +290,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                             CtorArgs = new Object[] { node.String().Substring(1) }
                         };
                     }
-                
+
                     int i;
                     float f;
                     if (node.TryInt(out i))

@@ -1,10 +1,9 @@
-using System;
 using Crystal.Framework;
 using Crystal.Framework.Graphics;
 using Crystal.Framework.Math;
 using Crystal.Engine.Backends.MonoGame;
-using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
+using CrystalSampler = Crystal.Framework.Graphics.SamplerState;
 
 namespace Crystal.Engine.Graphics
 {
@@ -21,7 +20,10 @@ namespace Crystal.Engine.Graphics
             this.spriteBatch = game.SpriteBatch;
         }
 
-        public void BeginDraw(TextureSlice? viewport = null, Matrix4 transformMatrix = null)
+        public void BeginDraw(
+            TextureSlice? viewport = null,
+            Matrix4 transformMatrix = null,
+            CrystalSampler samplerState = CrystalSampler.LinearClamp)
         {
             if (viewport.HasValue)
             {
@@ -31,7 +33,7 @@ namespace Crystal.Engine.Graphics
 
             var matrix = transformMatrix?.ToMonoGame();
 
-            this.spriteBatch.Begin(transformMatrix: matrix);
+            this.spriteBatch.Begin(transformMatrix: matrix, samplerState: samplerState.ToMonogame());
         }
 
         public void Draw(IDrawable texture,
