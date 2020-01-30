@@ -1,5 +1,5 @@
 using System;
-using Crystal.Framework.Audio;
+using Crystal.Framework.Media;
 using Microsoft.Xna.Framework.Media;
 
 namespace Crystal.Engine.Backends.MonoGame.Wrappers

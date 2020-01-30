@@ -1,12 +1,13 @@
 using System;
 using Crystal.Engine.Config;
 using System.Collections.Generic;
-using Crystal.Framework.ECS;
+using Crystal.Framework;
 using Crystal.Engine.Graphics;
 using Crystal.Engine.SceneUtil;
 using Crystal.Engine.Backends.MonoGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonogameVector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Crystal.Engine
 {
@@ -81,7 +82,7 @@ namespace Crystal.Engine
                     null,
                     Color.White,
                     0,
-                    Vector2.Zero,
+                    MonogameVector2.Zero,
                     SpriteEffects.None,
                     0);
                 sp.End();

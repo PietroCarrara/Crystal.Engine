@@ -1,8 +1,8 @@
 using System;
 using Crystal.Framework.Graphics;
-using Crystal.Framework.ECS.Components.Graphical;
-using Crystal.Engine.Backends.MonoGame.Wrappers;
+using Crystal.Framework.Components;
 using Crystal.Engine.Graphics;
+using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.Backends.MonoGame

@@ -1,4 +1,4 @@
-using Crystal.Framework.Audio;
+using Crystal.Framework.Media;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 

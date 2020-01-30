@@ -1,4 +1,4 @@
-using Crystal.Framework.ECS;
+using Crystal.Framework;
 using Crystal.Engine.Backends.MonoGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
