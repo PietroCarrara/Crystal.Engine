@@ -3,20 +3,22 @@ using Crystal.Framework.Graphics;
 using Crystal.Framework.Math;
 using Crystal.Engine.Backends.MonoGame;
 using Microsoft.Xna.Framework.Graphics;
+using Crystal.Framework.UI;
 using CrystalSampler = Crystal.Framework.Graphics.SamplerState;
+using MGVec2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Crystal.Engine.Graphics
 {
     public class CrystalDrawer : IDrawer
     {
-        private CrystalGame game;
+        // private CrystalGame game;
         private SpriteBatch spriteBatch;
 
         private Viewport? oldViewport;
 
         public CrystalDrawer(CrystalGame game)
         {
-            this.game = game;
+            // this.game = game;
             this.spriteBatch = game.SpriteBatch;
         }
 
@@ -27,13 +29,16 @@ namespace Crystal.Engine.Graphics
         {
             if (viewport.HasValue)
             {
-                this.oldViewport = game.GraphicsDevice.Viewport;
-                this.game.GraphicsDevice.Viewport = new Viewport(viewport.Value.ToMonoGame());
+                this.oldViewport = spriteBatch.GraphicsDevice.Viewport;
+                this.spriteBatch.GraphicsDevice.Viewport = new Viewport(viewport.Value.ToMonoGame());
             }
 
             var matrix = transformMatrix?.ToMonoGame();
 
-            this.spriteBatch.Begin(transformMatrix: matrix, samplerState: samplerState.ToMonogame());
+            this.spriteBatch.Begin(
+                transformMatrix: matrix,
+                samplerState: samplerState.ToMonogame()
+            );
         }
 
         public void Draw(IDrawable texture,
@@ -49,7 +54,9 @@ namespace Crystal.Engine.Graphics
             var orig = origin.HasValue
                                 ? origin.Value
                                 : new Vector2(0.5f, 0.5f);
-            orig *= new Vector2(texture.Width, texture.Height);
+            orig *= sourceRectangle.HasValue
+                                    ? new Vector2(sourceRectangle.Value.Width, sourceRectangle.Value.Height)
+                                    : new Vector2(texture.Width, texture.Height);
 
             this.spriteBatch.Draw(
                 tex,
@@ -64,13 +71,59 @@ namespace Crystal.Engine.Graphics
             );
         }
 
+        public void Draw(IDrawable texture,
+                         Rectangle destinationRectangle,
+                         float deltaTime,
+                         Vector2? origin = null,
+                         float rotation = 0,
+                         TextureSlice? sourceRectangle = null)
+        {
+            var tex = texture.ToTexture2D();
+
+            var orig = origin.HasValue
+                                ? origin.Value
+                                : new Vector2(0.5f, 0.5f);
+            orig *= sourceRectangle.HasValue
+                                    ? new Vector2(sourceRectangle.Value.Width, sourceRectangle.Value.Height)
+                                    : new Vector2(texture.Width, texture.Height);
+
+            this.spriteBatch.Draw(
+                tex,
+                destinationRectangle.ToMonoGame(),
+                sourceRectangle?.ToMonoGame(),
+                Microsoft.Xna.Framework.Color.White,
+                rotation,
+                orig.ToMonoGame(),
+                SpriteEffects.None,
+                0
+            );
+        }
+
+        public void DrawString(IFont font, Vector2 position, string text, float rotation = 0)
+        {
+            var fon = font.ToMonoGame();
+            var pos = position.ToMonoGame();
+
+            this.spriteBatch.DrawString(
+                fon,
+                text,
+                pos,
+                Microsoft.Xna.Framework.Color.Black,
+                rotation,
+                MGVec2.One,
+                MGVec2.One,
+                SpriteEffects.None,
+                0
+            );
+        }
+
         public void EndDraw()
         {
             this.spriteBatch.End();
 
             if (this.oldViewport.HasValue)
             {
-                this.game.GraphicsDevice.Viewport = this.oldViewport.Value;
+                this.spriteBatch.GraphicsDevice.Viewport = this.oldViewport.Value;
                 this.oldViewport = null;
             }
         }
