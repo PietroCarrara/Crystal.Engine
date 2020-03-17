@@ -42,6 +42,10 @@ namespace Crystal.Engine.Backends.MonoGame.Wrappers
             {
                 return new RenderTarget2DWrapper(rt2d);
             }
+            if (content is SpriteFont sprFnt)
+            {
+                return new SpriteFontWrapper(sprFnt);
+            }
             if (content is ContentManager cntMgr)
             {
                 return new CrystalContentManager(cntMgr);

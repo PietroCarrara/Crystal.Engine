@@ -17,9 +17,9 @@ namespace Crystal.Engine.Graphics.Scalers
             Rectangle targetRect = new Rectangle();
             (_, _, targetRect.Width, targetRect.Height) = this.game.GraphicsDevice.Viewport.Bounds;
 
-            var scaleY = w / (float)targetRect.Width;
-            var scaleX = h / (float)targetRect.Height;
-            var scale = Math.Max(scaleX, scaleY);
+            var scaleX = w / (float)targetRect.Width;
+            var scaleY = h / (float)targetRect.Height;
+            var scale = Math.Max(scaleY, scaleX);
 
             var width = (int)(w / scale);
             var height = (int)(h / scale);
