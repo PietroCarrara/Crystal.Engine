@@ -13,6 +13,18 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Themes/kenney/Blue/blue_panel.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Themes/kenney/Blue/blue_panel.png
+
 #begin Themes/kenney/Font/kenvector_future_thin_12.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

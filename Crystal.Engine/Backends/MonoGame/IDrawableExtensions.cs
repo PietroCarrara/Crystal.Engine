@@ -35,6 +35,10 @@ namespace Crystal.Engine.Backends.MonoGame
             {
                 return sprShtAnim.Texture.ToTexture2D();
             }
+            else if (self is NinePatchImage nnPtchImg)
+            {
+                return nnPtchImg.Texture.ToTexture2D();
+            }
 
             throw new Exception("Could not cast IDrawable to Texture2D!");
         }
