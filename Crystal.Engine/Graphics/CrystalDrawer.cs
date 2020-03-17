@@ -1,9 +1,9 @@
 using Crystal.Framework;
+using Crystal.Framework.UI;
 using Crystal.Framework.Graphics;
 using Crystal.Framework.Math;
 using Crystal.Engine.Backends.MonoGame;
 using Microsoft.Xna.Framework.Graphics;
-using Crystal.Framework.UI;
 using CrystalSampler = Crystal.Framework.Graphics.SamplerState;
 using MGVec2 = Microsoft.Xna.Framework.Vector2;
 
@@ -72,7 +72,7 @@ namespace Crystal.Engine.Graphics
         }
 
         public void Draw(IDrawable texture,
-                         Rectangle destinationRectangle,
+                         TextureSlice destinationRectangle,
                          float deltaTime,
                          Vector2? origin = null,
                          float rotation = 0,
@@ -99,10 +99,11 @@ namespace Crystal.Engine.Graphics
             );
         }
 
-        public void DrawString(IFont font, Vector2 position, string text, float rotation = 0)
+        public void DrawString(IFont font, Vector2 position, string text, Vector2? scale = null, float rotation = 0)
         {
             var fon = font.ToMonoGame();
             var pos = position.ToMonoGame();
+            var scl = scale.HasValue ? scale.Value.ToMonoGame() : MGVec2.One;
 
             this.spriteBatch.DrawString(
                 fon,
@@ -111,7 +112,7 @@ namespace Crystal.Engine.Graphics
                 Microsoft.Xna.Framework.Color.Black,
                 rotation,
                 MGVec2.One,
-                MGVec2.One,
+                scl,
                 SpriteEffects.None,
                 0
             );

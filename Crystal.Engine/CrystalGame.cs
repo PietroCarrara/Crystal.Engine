@@ -5,6 +5,7 @@ using Crystal.Framework;
 using Crystal.Engine.Graphics;
 using Crystal.Engine.SceneUtil;
 using Crystal.Engine.Backends.MonoGame;
+using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonogameVector2 = Microsoft.Xna.Framework.Vector2;
@@ -17,6 +18,8 @@ namespace Crystal.Engine
         public Stack<Scene> Scenes { get; private set; } = new Stack<Scene>();
         public ICrystalScaler Scaler { get; private set; }
 
+        public new CrystalContentManager Content;
+
         private readonly string MainScene;
 
         public CrystalGame(CrystalConfig config)
@@ -28,6 +31,8 @@ namespace Crystal.Engine
             this.Scenes.Push(
                 new CrystalScene(this.MainScene, this)
             );
+
+            this.Content = new CrystalContentManager(base.Content);
 
             this.Scaler = CrystalScalerFactory.FromStrategy(config.ScaleStrategy, this);
 

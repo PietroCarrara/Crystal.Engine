@@ -5,10 +5,9 @@ using System.Reflection;
 using System.Globalization;
 using System.Collections.Generic;
 using Crystal.Framework;
-using Crystal.Framework.ECS;
 using Crystal.Engine.Input;
-using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Crystal.Engine.Graphics;
+using Crystal.Engine.UI.Themes;
 
 namespace Crystal.Engine.SceneUtil
 {
@@ -26,6 +25,12 @@ namespace Crystal.Engine.SceneUtil
         public List<ObjectModel> Renderers = new List<ObjectModel>();
 
         public List<EntityModel> Entities = new List<EntityModel>();
+
+        /// <summary>
+        /// The fully classified name of the theme class that will
+        /// be used as the scene default UI theme
+        /// </summary>
+        public string ThemeClass = "";
 
         public SceneInitializer(string name)
         {
@@ -46,13 +51,7 @@ namespace Crystal.Engine.SceneUtil
             {
                 scene.AddResource(
                     res.Key,
-                    MonoGameWrapper.Wrap(game.Content.Load<object>(
-                        Path.Combine(
-                            Directory.GetCurrentDirectory(),
-                            game.Content.RootDirectory,
-                            res.Value
-                        )
-                    ))
+                    game.Content.Load<object>(res.Value)
                 );
             }
 
@@ -84,7 +83,7 @@ namespace Crystal.Engine.SceneUtil
             }
 
             // Initialize the game drawer
-            scene.SpriteBatch = new CrystalDrawer(game);
+            scene.Drawer = new CrystalDrawer(game);
 
             // Initialize viewport as "fullscreen"
             var size = new Point(game.GraphicsDevice.PresentationParameters.BackBufferWidth,
@@ -96,6 +95,11 @@ namespace Crystal.Engine.SceneUtil
 
             // Initialize input
             scene.Input = new CrystalInput(game, scene);
+
+            scene.Content = game.Content;
+
+            scene.Theme = this.ThemeClass == "" ? new KenneyTheme() : null;
+            scene.Theme.Load(scene.Content);
 
             // Call the user-defined code
             // for system initialization
@@ -204,7 +208,7 @@ namespace Crystal.Engine.SceneUtil
     }
 
     /// <summary>
-    /// A list is just a name associated with a list
+    /// A entity is just a name associated with a list
     /// of objects, that we can hopefuly cast to IComponent
     /// </summary>
     public struct EntityModel

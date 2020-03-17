@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.Backends.MonoGame.Wrappers
@@ -17,6 +18,12 @@ namespace Crystal.Engine.Backends.MonoGame.Wrappers
 
     public sealed class MonoGameWrapper
     {
+        /// <summary>
+        /// Wraps an object into a wrapper
+        /// If there is no wrapper available, returns the object
+        /// </summary>
+        /// <param name="content">The object to wrap</param>
+        /// <returns>The wrapped object or the untouched object</returns>
         public static object Wrap(object content)
         {
             if (content is Texture2D t)
@@ -35,8 +42,12 @@ namespace Crystal.Engine.Backends.MonoGame.Wrappers
             {
                 return new RenderTarget2DWrapper(rt2d);
             }
+            if (content is ContentManager cntMgr)
+            {
+                return new CrystalContentManager(cntMgr);
+            }
 
-            throw new Exception($"Content of type {content.GetType()} can't be wrapped!");
+            return content;
         }
     }
 }

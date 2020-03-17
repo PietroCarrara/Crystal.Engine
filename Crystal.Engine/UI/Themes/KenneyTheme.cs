@@ -1,0 +1,28 @@
+using System.Collections.Generic;
+using Crystal.Framework.UI;
+using Crystal.Framework.Content;
+using Crystal.Engine.Backends.MonoGame.Wrappers;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace Crystal.Engine.UI.Themes
+{
+    public class KenneyTheme : ITheme
+    {
+        private Dictionary<string, IFont> fonts;
+        
+        public Dictionary<string, IFont> Fonts => fonts;
+        
+        public void Load(IContentManager cm)
+        {
+            this.fonts = new Dictionary<string, IFont>();
+            this.fonts.Add(
+                "Kenvector thin 12",
+                new SpriteFontWrapper(cm.Load<SpriteFont>("engine://Themes/kenney/Font/kenvector_future_thin_12"))
+            );
+            this.fonts.Add(
+                "Kenvector thin 72",
+                new SpriteFontWrapper(cm.Load<SpriteFont>("engine://Themes/kenney/Font/kenvector_future_thin_72"))
+            );
+        }
+    }
+}
