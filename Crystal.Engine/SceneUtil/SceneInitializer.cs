@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Globalization;
@@ -81,6 +80,8 @@ namespace Crystal.Engine.SceneUtil
                     e.Add(c);
                 }
             }
+
+            // TODO: The rest of this initialization should be done with Crystal.Framework.LowLevel
 
             // Initialize the game drawer
             scene.Drawer = new CrystalDrawer(game);

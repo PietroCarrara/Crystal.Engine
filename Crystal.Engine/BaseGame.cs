@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Crystal.Framework.LowLevel;
+using Crystal.Engine.Factories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,7 +8,7 @@ namespace Crystal.Engine
     public abstract class BaseGame : Game
     {
         public SpriteBatch SpriteBatch { get; private set; }
-        
+
         GraphicsDeviceManager graphics;
 
         public abstract void Update(float delta);
@@ -29,6 +30,11 @@ namespace Crystal.Engine
         protected override void LoadContent()
         {
             this.SpriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // Initialize Crystal
+            CrystalInitialization.Execute(
+                new CrystalCanvasFactory(GraphicsDevice, Window)
+            );
 
             base.LoadContent();
         }
