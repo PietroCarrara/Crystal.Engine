@@ -41,10 +41,10 @@ namespace Crystal.Engine.UI.Themes
                 "blue",
                 new NinePatchImage(
                     cm.Load<IDrawable>("engine://Themes/kenney/Blue/blue_panel"),
-                    new Point(7, 5),
-                    new Point(93, 5),
-                    new Point(7, 93),
-                    new Point(93, 93),
+                    new Point(7, 7),
+                    new Point(92, 7),
+                    new Point(7, 92),
+                    new Point(92, 92),
                     (25, 25)
                 )
             );
