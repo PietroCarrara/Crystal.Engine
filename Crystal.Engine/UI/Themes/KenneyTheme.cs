@@ -45,7 +45,7 @@ namespace Crystal.Engine.UI.Themes
                     new Point(93, 5),
                     new Point(7, 93),
                     new Point(93, 93),
-                    5
+                    (25, 25)
                 )
             );
             
