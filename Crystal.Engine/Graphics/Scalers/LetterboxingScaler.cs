@@ -1,9 +1,10 @@
 using System;
+using Crystal.Framework.Graphics;
+using Crystal.Framework.Math;
 using Microsoft.Xna.Framework;
-
 namespace Crystal.Engine.Graphics.Scalers
 {
-    public class LetterboxingScaler : ICrystalScaler
+    public class LetterboxingScaler : IScaler
     {
         private readonly CrystalGame game;
 
@@ -11,25 +12,37 @@ namespace Crystal.Engine.Graphics.Scalers
         {
             this.game = g;
         }
-        
-        public Rectangle Scale(int w, int h)
-        {
-            Rectangle targetRect = new Rectangle();
-            (_, _, targetRect.Width, targetRect.Height) = this.game.GraphicsDevice.Viewport.Bounds;
 
-            var scaleX = w / (float)targetRect.Width;
-            var scaleY = h / (float)targetRect.Height;
+        public Matrix4 Invert(TextureSlice texture)
+        {
+            var screenSize = new Point();
+            (_, _, screenSize.X, screenSize.Y) = this.game.GraphicsDevice.Viewport.Bounds;
+            
+            var scaled = this.Scale(texture);
+            
+            var matrix = Matrix4.CreateTranslation(-scaled.TopLeft.X, -scaled.TopLeft.Y, 0);
+
+            return matrix;
+        }
+
+        public TextureSlice Scale(TextureSlice texture)
+        {
+            var screenSize = new Point();
+            (_, _, screenSize.X, screenSize.Y) = this.game.GraphicsDevice.Viewport.Bounds;
+
+            var scaleX = texture.Size.X / (float)screenSize.X;
+            var scaleY = texture.Size.Y / (float)screenSize.Y;
             var scale = Math.Max(scaleY, scaleX);
 
-            var width = (int)(w / scale);
-            var height = (int)(h / scale);
+            var width = (int)(texture.Size.X / scale);
+            var height = (int)(texture.Size.Y / scale);
 
-            return new Rectangle((targetRect.Width - width) / 2,
-                                 (targetRect.Height - height) / 2,
-                                 width,
-                                 height);
-
-
+            return new TextureSlice(
+                (screenSize.X - width) / 2,
+                (screenSize.Y - height) / 2,
+                width,
+                height
+            );
         }
     }
 }

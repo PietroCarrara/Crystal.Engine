@@ -1,9 +1,6 @@
-using System;
 using Microsoft.Xna.Framework.Input;
 using Crystal.Framework;
-using Crystal.Framework.ECS;
 using Crystal.Framework.Input;
-using Crystal.Engine.Backends.MonoGame;
 
 namespace Crystal.Engine.Input
 {
@@ -81,16 +78,8 @@ namespace Crystal.Engine.Input
 
         public Vector2 GetMousePosition()
         {
-            var rect = game.Scaler.Scale((int)scene.Size.X, (int)scene.Size.Y);
-
-            // Position relative to the top-left corner of the screen
-            var relativePosition = currMouseState.Position - rect.Location;
-
-            // How much of the screen has the mouse "walked"
-            var percentagePosition = relativePosition.ToVector2() / rect.Size.ToVector2();
-
-            // Scale it to the scene
-            return new Vector2(percentagePosition.X * scene.Size.X, percentagePosition.Y * scene.Size.Y);
+            // TODO: Scale the coordinates to match the design space
+            return new Vector2(currMouseState.Position.X, currMouseState.Y);
         }
 
         public bool IsActionDown(string action)

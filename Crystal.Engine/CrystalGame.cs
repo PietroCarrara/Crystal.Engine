@@ -2,13 +2,17 @@ using System;
 using Crystal.Engine.Config;
 using System.Collections.Generic;
 using Crystal.Framework;
+using Crystal.Framework.Graphics;
+using Crystal.Framework.LowLevel;
 using Crystal.Engine.Graphics;
 using Crystal.Engine.SceneUtil;
+using Crystal.Engine.Factories;
 using Crystal.Engine.Backends.MonoGame;
 using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonogameVector2 = Microsoft.Xna.Framework.Vector2;
+using CrystalPoint = Crystal.Framework.Point;
 
 namespace Crystal.Engine
 {
@@ -16,7 +20,6 @@ namespace Crystal.Engine
     {
         public readonly CrystalConfig Config;
         public Stack<Scene> Scenes { get; private set; } = new Stack<Scene>();
-        public ICrystalScaler Scaler { get; private set; }
 
         public new CrystalContentManager Content;
 
@@ -34,8 +37,6 @@ namespace Crystal.Engine
 
             this.Content = new CrystalContentManager(base.Content);
 
-            this.Scaler = CrystalScalerFactory.FromStrategy(config.ScaleStrategy, this);
-
             this.Window.Title = config.Project;
             this.Window.AllowUserResizing = true;
         }
@@ -43,6 +44,12 @@ namespace Crystal.Engine
         protected override void LoadContent()
         {
             base.LoadContent();
+
+            // Initialize Crystal
+            CrystalInitialization.Execute(
+                new CrystalCanvasFactory(GraphicsDevice, Window),
+                ScalerFactory.FromStrategy(Config.ScaleStrategy, this)
+            );
 
             var scene = Scenes.Peek();
 
@@ -81,7 +88,9 @@ namespace Crystal.Engine
                 {
                     var tex = canvas.ToMonoGame();
 
-                    var targetRect = this.Scaler.Scale(tex.Width, tex.Height);
+                    var targetRect = Scaler.Instance.Scale(
+                        new TextureSlice(CrystalPoint.Zero, canvas.Size)
+                    ).ToMonoGame();
 
                     sp.Begin();
                     sp.Draw(
