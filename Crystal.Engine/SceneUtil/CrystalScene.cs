@@ -46,9 +46,6 @@ namespace Crystal.Engine.SceneUtil
         public override void BeforeRender()
         {
             base.BeforeRender();
-
-            this.game.GraphicsDevice.SetRenderTarget((RenderTarget2D)this.Viewport.ToTexture2D());
-            game.GraphicsDevice.Clear(Color.CornflowerBlue);
         }
 
         public override void Load()
@@ -64,8 +61,6 @@ namespace Crystal.Engine.SceneUtil
         public override void Unload()
         {
             base.Unload();
-
-            this.Viewport.Dispose();
         }
     }
 }

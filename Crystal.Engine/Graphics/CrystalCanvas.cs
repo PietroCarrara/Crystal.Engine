@@ -1,5 +1,6 @@
 using Crystal.Framework;
 using Crystal.Framework.Graphics;
+using Color = Microsoft.Xna.Framework.Color;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.Graphics
@@ -9,8 +10,8 @@ namespace Crystal.Engine.Graphics
     /// </summary>
     public class CrystalCanvas : Canvas
     {
+        public RenderTarget2D RenderTarget { get; private set; }
         protected GraphicsDevice graphicsDevice { get; private set; }
-        private RenderTarget2D renderTarget;
         
         public CrystalCanvas(GraphicsDevice gd)
         {
@@ -19,17 +20,36 @@ namespace Crystal.Engine.Graphics
         
         public override void SetSize(Point size)
         {
-            if (renderTarget != null)
+            base.SetSize(size);
+            
+            if (RenderTarget != null)
             {
-                renderTarget.Dispose();
+                RenderTarget.Dispose();
             }
 
-            this.renderTarget = new RenderTarget2D(graphicsDevice, size.X, size.Y);
+            this.RenderTarget = new RenderTarget2D(
+                graphicsDevice,
+                size.X,
+                size.Y,
+                false,
+                SurfaceFormat.Color,
+                DepthFormat.None,
+                0,
+                RenderTargetUsage.PreserveContents
+            );
         }
 
         public override void Dispose()
         {
-            this.renderTarget.Dispose();
+            this.RenderTarget.Dispose();
+        }
+
+        public override void Clear()
+        {
+            var rt = graphicsDevice.GetRenderTargets();
+            graphicsDevice.SetRenderTarget(this.RenderTarget);
+            graphicsDevice.Clear(Color.Transparent);
+            graphicsDevice.SetRenderTargets(rt);
         }
     }
 }

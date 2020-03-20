@@ -11,31 +11,33 @@ namespace Crystal.Engine.Graphics
 {
     public class CrystalDrawer : IDrawer
     {
-        // private CrystalGame game;
         private SpriteBatch spriteBatch;
 
-        private Viewport? oldViewport;
+        private Viewport oldViewport;
 
         public CrystalDrawer(CrystalGame game)
         {
-            // this.game = game;
             this.spriteBatch = game.SpriteBatch;
         }
 
         public void BeginDraw(
+            IRenderTarget target,
             TextureSlice? viewport = null,
             Matrix4 transformMatrix = null,
             CrystalSampler samplerState = CrystalSampler.LinearClamp)
         {
+            oldViewport = spriteBatch.GraphicsDevice.Viewport;
+            
+            spriteBatch.GraphicsDevice.SetRenderTarget(target.ToMonoGame());
+
             if (viewport.HasValue)
             {
-                this.oldViewport = spriteBatch.GraphicsDevice.Viewport;
-                this.spriteBatch.GraphicsDevice.Viewport = new Viewport(viewport.Value.ToMonoGame());
+                spriteBatch.GraphicsDevice.Viewport = new Viewport(viewport.Value.ToMonoGame());
             }
 
             var matrix = transformMatrix?.ToMonoGame();
 
-            this.spriteBatch.Begin(
+            spriteBatch.Begin(
                 transformMatrix: matrix,
                 samplerState: samplerState.ToMonogame()
             );
@@ -120,13 +122,8 @@ namespace Crystal.Engine.Graphics
 
         public void EndDraw()
         {
-            this.spriteBatch.End();
-
-            if (this.oldViewport.HasValue)
-            {
-                this.spriteBatch.GraphicsDevice.Viewport = this.oldViewport.Value;
-                this.oldViewport = null;
-            }
+            spriteBatch.End();
+            spriteBatch.GraphicsDevice.Viewport = oldViewport;
         }
     }
 }

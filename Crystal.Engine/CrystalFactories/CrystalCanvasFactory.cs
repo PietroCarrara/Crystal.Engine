@@ -27,6 +27,7 @@ namespace Crystal.Engine.Factories
         {
             var canvas = new CrystalCanvas(graphics);
             canvas.SetSize(size);
+            
             return canvas;
         }
     }

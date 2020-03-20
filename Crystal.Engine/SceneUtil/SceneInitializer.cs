@@ -86,14 +86,6 @@ namespace Crystal.Engine.SceneUtil
             // Initialize the game drawer
             scene.Drawer = new CrystalDrawer(game);
 
-            // Initialize viewport as "fullscreen"
-            var size = new Point(game.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                                 game.GraphicsDevice.PresentationParameters.BackBufferHeight);
-            
-            scene.Viewport = new CrystalSceneViewport(game.GraphicsDevice, size, scene);
-            // TODO: Set scene resolution in scene file
-            scene.Viewport.SetSize(new Point(1280, 720));
-
             // Initialize input
             scene.Input = new CrystalInput(game, scene);
 

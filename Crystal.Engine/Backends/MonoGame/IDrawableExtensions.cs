@@ -19,10 +19,6 @@ namespace Crystal.Engine.Backends.MonoGame
             {
                 return tex.Resource;
             }
-            else if (self is CrystalSceneViewport sceneViewport)
-            {
-                return sceneViewport.Texture;
-            }
             else if (self is Sprite spr)
             {
                 return spr.Texture.ToTexture2D();

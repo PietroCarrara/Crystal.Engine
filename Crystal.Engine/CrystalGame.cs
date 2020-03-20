@@ -75,22 +75,26 @@ namespace Crystal.Engine
             {
                 scene.Render(delta);
 
-                this.GraphicsDevice.Clear(Color.Black);
-                var tex = scene.Viewport.ToTexture2D();
+                this.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-                var targetRect = this.Scaler.Scale(tex.Width, tex.Height);
+                foreach (var canvas in scene.Canvases)
+                {
+                    var tex = canvas.ToMonoGame();
 
-                sp.Begin();
-                sp.Draw(
-                    tex,
-                    targetRect,
-                    null,
-                    Color.White,
-                    0,
-                    MonogameVector2.Zero,
-                    SpriteEffects.None,
-                    0);
-                sp.End();
+                    var targetRect = this.Scaler.Scale(tex.Width, tex.Height);
+
+                    sp.Begin();
+                    sp.Draw(
+                        tex,
+                        targetRect,
+                        null,
+                        Color.White,
+                        0,
+                        MonogameVector2.Zero,
+                        SpriteEffects.None,
+                        0);
+                    sp.End();
+                }
             }
         }
     }

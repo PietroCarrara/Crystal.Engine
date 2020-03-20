@@ -1,7 +1,7 @@
 using System;
 using Crystal.Framework;
 using Crystal.Framework.Graphics;
-using Microsoft.Xna.Framework;
+using GameWindow = Microsoft.Xna.Framework.GameWindow;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Crystal.Engine.Graphics
@@ -23,12 +23,10 @@ namespace Crystal.Engine.Graphics
 
         private void resize(object sender = null, EventArgs e = null)
         {
-            this.SetSize(
-                (
-                    graphicsDevice.PresentationParameters.BackBufferHeight,
-                    graphicsDevice.PresentationParameters.BackBufferWidth
-                )
-            );
+            this.SetSize(new Point(
+                graphicsDevice.PresentationParameters.BackBufferWidth,
+                graphicsDevice.PresentationParameters.BackBufferHeight
+            ));
         }
 
         public override void Dispose()
