@@ -77,7 +77,7 @@ namespace Crystal.Engine
 
                 this.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-                foreach (var canvas in scene.Canvases)
+                foreach (var canvas in scene.Canvases.Visible)
                 {
                     var tex = canvas.ToMonoGame();
 
