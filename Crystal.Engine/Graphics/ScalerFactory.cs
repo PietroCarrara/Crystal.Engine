@@ -7,12 +7,12 @@ namespace Crystal.Engine.Graphics
 {
     public static class ScalerFactory
     {
-        public static IScaler FromStrategy(ScaleStrategy strat, CrystalGame game)
+        public static IScaler FromStrategy(ScaleStrategy strat)
         {
             switch (strat)
             {
                 case ScaleStrategy.LetterBoxing:
-                    return new LetterboxingScaler(game);
+                    return new LetterboxingScaler();
             }
 
             throw new Exception("Unknown scaling strategy!");

@@ -48,7 +48,7 @@ namespace Crystal.Engine
             // Initialize Crystal
             CrystalInitialization.Execute(
                 new CrystalCanvasFactory(GraphicsDevice, Window),
-                ScalerFactory.FromStrategy(Config.ScaleStrategy, this)
+                ScalerFactory.FromStrategy(Config.ScaleStrategy)
             );
 
             var scene = Scenes.Peek();
@@ -89,6 +89,12 @@ namespace Crystal.Engine
                     var tex = canvas.ToMonoGame();
 
                     var targetRect = Scaler.Instance.Scale(
+                        new TextureSlice(
+                            0,
+                            0,
+                            this.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                            this.GraphicsDevice.PresentationParameters.BackBufferHeight
+                        ),
                         new TextureSlice(CrystalPoint.Zero, canvas.Size)
                     ).ToMonoGame();
 

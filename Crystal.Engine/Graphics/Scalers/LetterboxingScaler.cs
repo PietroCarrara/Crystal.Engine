@@ -1,41 +1,21 @@
 using System;
 using Crystal.Framework.Graphics;
 using Crystal.Framework.Math;
-using Microsoft.Xna.Framework;
+
 namespace Crystal.Engine.Graphics.Scalers
 {
     public class LetterboxingScaler : IScaler
     {
-        private readonly CrystalGame game;
-
-        public LetterboxingScaler(CrystalGame g)
+        public TextureSlice Scale(TextureSlice container, TextureSlice fitting)
         {
-            this.game = g;
-        }
+            var screenSize = container.Size;
 
-        public Matrix4 Invert(TextureSlice texture)
-        {
-            var screenSize = new Point();
-            (_, _, screenSize.X, screenSize.Y) = this.game.GraphicsDevice.Viewport.Bounds;
-            
-            var scaled = this.Scale(texture);
-            
-            var matrix = Matrix4.CreateTranslation(-scaled.TopLeft.X, -scaled.TopLeft.Y, 0);
-
-            return matrix;
-        }
-
-        public TextureSlice Scale(TextureSlice texture)
-        {
-            var screenSize = new Point();
-            (_, _, screenSize.X, screenSize.Y) = this.game.GraphicsDevice.Viewport.Bounds;
-
-            var scaleX = texture.Size.X / (float)screenSize.X;
-            var scaleY = texture.Size.Y / (float)screenSize.Y;
+            var scaleX = fitting.Size.X / (float)screenSize.X;
+            var scaleY = fitting.Size.Y / (float)screenSize.Y;
             var scale = Math.Max(scaleY, scaleX);
 
-            var width = (int)(texture.Size.X / scale);
-            var height = (int)(texture.Size.Y / scale);
+            var width = (int)(fitting.Size.X / scale);
+            var height = (int)(fitting.Size.Y / scale);
 
             return new TextureSlice(
                 (screenSize.X - width) / 2,
@@ -43,6 +23,32 @@ namespace Crystal.Engine.Graphics.Scalers
                 width,
                 height
             );
+        }
+
+        public Matrix4 ScaleMatrix(TextureSlice container, TextureSlice fitting)
+        {
+            var screenSize = container.Size;
+
+            var scaleX = fitting.Size.X / (float)screenSize.X;
+            var scaleY = fitting.Size.Y / (float)screenSize.Y;
+            var scale = Math.Max(scaleY, scaleX);
+
+            var width = (int)(fitting.Size.X / scale);
+            var height = (int)(fitting.Size.Y / scale);
+
+            var matrix = Matrix4.CreateTranslation(
+                (screenSize.X - width) / 2,
+                (screenSize.Y - height) / 2,
+                0
+            );
+
+            matrix *= Matrix4.CreateScale(
+                1 / scale,
+                1 / scale,
+                1
+            );
+
+            return matrix;
         }
     }
 }
