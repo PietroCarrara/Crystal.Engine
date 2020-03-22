@@ -2,6 +2,8 @@ using System.Numerics;
 using Microsoft.Xna.Framework.Input;
 using Crystal.Framework;
 using Crystal.Framework.Input;
+using Crystal.Framework.Graphics;
+using Crystal.Framework.LowLevel;
 
 namespace Crystal.Engine.Input
 {
@@ -79,8 +81,18 @@ namespace Crystal.Engine.Input
 
         public Vector2 GetMousePosition()
         {
-            // TODO: Scale the coordinates to match the design space
-            return new Vector2(currMouseState.Position.X, currMouseState.Y);
+            var mat = Scaler.Instance.ScaleMatrix(
+                new TextureSlice(
+                    0,
+                    0,
+                    game.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                    game.GraphicsDevice.PresentationParameters.BackBufferHeight
+                ),
+                new TextureSlice(Point.Zero, scene.Size)
+            );
+
+            return mat.Invert()
+                      .Transform(new Vector2(currMouseState.Position.X, currMouseState.Y));
         }
 
         public bool IsActionDown(string action)

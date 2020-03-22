@@ -36,16 +36,16 @@ namespace Crystal.Engine.Graphics.Scalers
             var width = (int)(fitting.Size.X / scale);
             var height = (int)(fitting.Size.Y / scale);
 
-            var matrix = Matrix4x4.CreateTranslation(
-                (screenSize.X - width) / 2,
-                (screenSize.Y - height) / 2,
-                0
-            );
-
-            matrix *= Matrix4x4.CreateScale(
+            var matrix = Matrix4x4.CreateScale(
                 1 / scale,
                 1 / scale,
                 1
+            );
+
+            matrix *= Matrix4x4.CreateTranslation(
+                (screenSize.X - width) / 2,
+                (screenSize.Y - height) / 2,
+                0
             );
 
             return matrix;

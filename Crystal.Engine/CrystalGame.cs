@@ -73,7 +73,7 @@ namespace Crystal.Engine
         public override void Render(SpriteBatch sp, float delta)
         {
 #if DEBUG
-            this.Window.Title = $"{this.Config.Project} [{Math.Floor(1 / delta)} FPS]";
+            this.Window.Title = $"{this.Config.Project} [{Math.Round(1 / delta)} FPS]";
 #endif
 
             Scene scene;
