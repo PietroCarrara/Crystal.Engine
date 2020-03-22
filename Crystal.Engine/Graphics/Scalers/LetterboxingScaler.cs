@@ -1,6 +1,6 @@
 using System;
+using System.Numerics;
 using Crystal.Framework.Graphics;
-using Crystal.Framework.Math;
 
 namespace Crystal.Engine.Graphics.Scalers
 {
@@ -25,7 +25,7 @@ namespace Crystal.Engine.Graphics.Scalers
             );
         }
 
-        public Matrix4 ScaleMatrix(TextureSlice container, TextureSlice fitting)
+        public Matrix4x4 ScaleMatrix(TextureSlice container, TextureSlice fitting)
         {
             var screenSize = container.Size;
 
@@ -36,13 +36,13 @@ namespace Crystal.Engine.Graphics.Scalers
             var width = (int)(fitting.Size.X / scale);
             var height = (int)(fitting.Size.Y / scale);
 
-            var matrix = Matrix4.CreateTranslation(
+            var matrix = Matrix4x4.CreateTranslation(
                 (screenSize.X - width) / 2,
                 (screenSize.Y - height) / 2,
                 0
             );
 
-            matrix *= Matrix4.CreateScale(
+            matrix *= Matrix4x4.CreateScale(
                 1 / scale,
                 1 / scale,
                 1

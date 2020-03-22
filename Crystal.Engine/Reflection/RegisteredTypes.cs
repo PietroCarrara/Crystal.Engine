@@ -64,7 +64,18 @@ namespace Crystal.Engine.Reflection
                 }
             }
 
-            throw new TypeLoadException($"Type \"{fullType}\" wasn't found." +
+            // Okay, so not a custom type? Let's try to search EVERYWHERE (including where we've already been)
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                t = assembly.GetType(fullType);
+
+                if (t != null)
+                {
+                    return t;
+                }
+            }            
+
+            throw new TypeLoadException($"Type \"{fullType}\" wasn't found. " +
                                          "Maybe you are missing an assembly reference?");
         }
     }

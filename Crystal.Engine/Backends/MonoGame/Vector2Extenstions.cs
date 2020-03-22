@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using Vec2 = Crystal.Framework.Vector2;
+using Vec2 = System.Numerics.Vector2;
 
 namespace Crystal.Engine.Backends.MonoGame
 {

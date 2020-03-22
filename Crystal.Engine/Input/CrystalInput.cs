@@ -1,3 +1,4 @@
+using System.Numerics;
 using Microsoft.Xna.Framework.Input;
 using Crystal.Framework;
 using Crystal.Framework.Input;
