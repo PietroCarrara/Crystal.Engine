@@ -10,15 +10,19 @@ namespace Crystal.Engine.UI.Themes
     {
         private Dictionary<string, IFont> fonts;
         private Dictionary<string, NinePatchImage> panelBackgrounds;
+        private Dictionary<string, ButtonTheme> buttonThemes;
 
         public IFont SmallFont => this.fonts["Kenvector thin 12"];
         public IFont MediumFont => this.fonts["Kenvector thin 36"];
         public IFont BigFont => this.fonts["Kenvector thin 72"];
 
         public NinePatchImage PanelBackground => this.panelBackgrounds["blue"];
+
+        public ButtonTheme ButtonTheme => this.ButtonThemes["blue"];
         
         public Dictionary<string, IFont> Fonts => fonts;
         public Dictionary<string, NinePatchImage> PanelBackgrounds => panelBackgrounds;
+        public Dictionary<string, ButtonTheme> ButtonThemes => buttonThemes;
         
         public void Load(IContentManager cm)
         {
@@ -46,6 +50,25 @@ namespace Crystal.Engine.UI.Themes
                     (7, 92),
                     (92, 92),
                     (25, 25)
+                )
+            );
+
+            this.buttonThemes = new Dictionary<string, ButtonTheme>();
+            this.buttonThemes.Add(
+                "blue",
+                new ButtonTheme(
+                    new ThreePatchImage(
+                        cm.Load<IDrawable>("engine://Themes/kenney/Blue/blue_button"),
+                        6,
+                        42,
+                        20
+                    ),
+                    new ThreePatchImage(
+                        cm.Load<IDrawable>("engine://Themes/kenney/Blue/blue_button_hover"),
+                        6,
+                        42,
+                        20
+                    )
                 )
             );
         }
