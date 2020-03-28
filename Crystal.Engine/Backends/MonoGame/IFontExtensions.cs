@@ -3,7 +3,7 @@ using Crystal.Framework.UI;
 using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Crystal.Engine.Backends.MonoGame
+namespace Crystal.Engine
 {
     public static class IFontExtensions
     {

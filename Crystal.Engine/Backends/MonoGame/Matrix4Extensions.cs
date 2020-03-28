@@ -1,7 +1,7 @@
 using System.Numerics;
 using Microsoft.Xna.Framework;
 
-namespace Crystal.Engine.Backends.MonoGame
+namespace Crystal.Engine
 {
     public static class Matrix4Extensions
     {

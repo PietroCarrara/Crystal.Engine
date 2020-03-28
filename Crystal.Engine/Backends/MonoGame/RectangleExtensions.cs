@@ -2,7 +2,7 @@ using System;
 using Crystal.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace Crystal.Engine.Backends.MonoGame
+namespace Crystal.Engine
 {
     public static class TextureSliceExtensions
     {

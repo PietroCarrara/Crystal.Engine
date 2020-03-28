@@ -3,7 +3,7 @@ using Crystal.Framework.Graphics;
 using Crystal.Engine.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Crystal.Engine.Backends.MonoGame
+namespace Crystal.Engine
 {
     public static class IRenderTargetExtensions
     {

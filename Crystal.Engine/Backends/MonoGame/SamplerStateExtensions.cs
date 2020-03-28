@@ -2,7 +2,7 @@ using System;
 using Microsoft.Xna.Framework.Graphics;
 using CrystalSampler = Crystal.Framework.Graphics.SamplerState;
 
-namespace Crystal.Engine.Backends.MonoGame
+namespace Crystal.Engine
 {
     public static class SamplerStateExtensions
     {

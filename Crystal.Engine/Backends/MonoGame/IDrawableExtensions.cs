@@ -1,11 +1,10 @@
 using System;
 using Crystal.Framework.Graphics;
 using Crystal.Framework.Components;
-using Crystal.Engine.Graphics;
 using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Crystal.Engine.Backends.MonoGame
+namespace Crystal.Engine
 {
     public static class IDrawableExtensions
     {
