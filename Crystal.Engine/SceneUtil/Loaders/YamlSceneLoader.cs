@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
+using Crystal.Framework;
 using Crystal.Engine.Reflection;
 using Crystal.Engine.Backends.Yaml;
 
@@ -117,6 +118,40 @@ namespace Crystal.Engine.SceneUtil.Loaders
                     var model = parseEntity(entity);
 
                     initializer.Entities.Add(model);
+                }
+            }
+
+            if (root.Children.ContainsKey("actions"))
+            {
+                foreach (var actionPair in root["actions"].Map())
+                {
+                    var name = actionPair.Key.Val().String();
+                    var yamlKeys = actionPair.Value;
+
+                    String[] keys;
+
+                    switch (yamlKeys.NodeType)
+                    {
+                        // Single key
+                        case YamlNodeType.Scalar:
+                            keys = new string[] { yamlKeys.Val().String() };
+                            break;
+
+                        // Many keys
+                        case YamlNodeType.Sequence:
+                            keys = yamlKeys.Seq().Select(n => n.Val().String()).ToArray();
+                            break;
+
+                        default:
+                            throw new YamlException(
+                                yamlKeys.Start,
+                                yamlKeys.End,
+                                "Expected a sequence or value node, but got none!"
+                            );
+                    }
+
+                    var buttons = keys.Select(k => (Buttons)Enum.Parse(typeof(Buttons), k));
+                    initializer.Actions.Add(new InputAction(name, buttons.ToArray()));
                 }
             }
 

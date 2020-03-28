@@ -25,6 +25,8 @@ namespace Crystal.Engine.SceneUtil
 
         public List<EntityModel> Entities = new List<EntityModel>();
 
+        public List<InputAction> Actions = new List<InputAction>();
+
         /// <summary>
         /// The fully classified name of the theme class that will
         /// be used as the scene default UI theme
@@ -81,16 +83,20 @@ namespace Crystal.Engine.SceneUtil
                 }
             }
 
+            // Add Actions
+            foreach (var action in this.Actions)
+            {
+                scene.Actions.Add(action);
+            }
+
             // TODO: The rest of this initialization should be done with Crystal.Framework.LowLevel
 
             // Initialize the game drawer
             scene.Drawer = new CrystalDrawer(game);
 
-            // Initialize input
-            scene.Input = new CrystalInput(game, scene);
-
             scene.Content = game.Content;
 
+            // TODO: Load named theme
             scene.Theme = this.ThemeClass == "" ? new KenneyTheme() : null;
             scene.Theme.Load(scene.Content);
 

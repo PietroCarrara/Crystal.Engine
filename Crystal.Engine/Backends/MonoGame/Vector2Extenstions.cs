@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Vec2 = System.Numerics.Vector2;
 
-namespace Crystal.Engine.Backends.MonoGame
+namespace Crystal.Engine
 {
     public static class Vector2Extensions
     {

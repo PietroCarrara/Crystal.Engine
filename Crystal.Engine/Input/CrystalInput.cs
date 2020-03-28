@@ -1,150 +1,64 @@
+using System;
 using System.Numerics;
 using Microsoft.Xna.Framework.Input;
-using Crystal.Framework;
-using Crystal.Framework.Input;
-using Crystal.Framework.Graphics;
-using Crystal.Framework.LowLevel;
+using Button = Crystal.Framework.Buttons;
 
 namespace Crystal.Engine.Input
 {
-    public class CrystalInput : IInput
+    public class CrystalInput : Framework.Input
     {
-        private readonly ActionPool actions;
-        private readonly Scene scene;
-        private readonly CrystalGame game;
-
-        // Keys should be synced for every input object
         private static KeyboardState prevKbState, currKbState;
         private static MouseState prevMouseState, currMouseState;
 
-        public CrystalInput(CrystalGame game, Scene scene)
-        {
-            this.scene = scene;
-            this.game = game;
+        public override Vector2 MousePosition => currMouseState.Position.ToVector2().ToCrystal();
+        
+        public override bool IsButtonDown(Button button) => buttonDown(button, currKbState, currMouseState);
 
-            this.actions = game.Config.Actions;
+        public override bool WasButtonDown(Button button) => buttonDown(button, prevKbState, prevMouseState);
+
+        private bool buttonDown(Button button, KeyboardState keyboard, MouseState mouse)
+        {
+            var bt = button.ToMonoGame();
+
+            // Key found
+            if (bt != Keys.None)
+            {
+                return keyboard.IsKeyDown(bt);
+            }
+            // Key not found, probably a mouse button
+            else
+            {
+                switch(button)
+                {
+                    case Button.MouseLeft:
+                        return mouse.LeftButton == ButtonState.Pressed;
+                    case Button.MouseRight:
+                        return mouse.RightButton == ButtonState.Pressed;
+                    case Button.MouseMiddle:
+                        return mouse.MiddleButton == ButtonState.Pressed;
+                    case Button.MouseButton4:
+                        return mouse.XButton1 == ButtonState.Pressed;
+                    case Button.MouseButton5:
+                        return mouse.XButton2 == ButtonState.Pressed;
+                    case Button.MouseButton6:
+                        throw new NotImplementedException();
+                    case Button.MouseButton7:
+                        throw new NotImplementedException();
+                    case Button.MouseButton8:
+                        throw new NotImplementedException();
+                    default:
+                        throw new Exception($"Could not locate button ${button}!");
+                }
+            }
         }
 
-        public void Update()
-        {
-            this.UpdateKeyboard(Keyboard.GetState());
-            this.UpdateMouse(Mouse.GetState());
-            // TODO: Gamepad
-        }
-
-        public void UpdateKeyboard(KeyboardState state)
-        {
-            prevKbState = currKbState;
-            currKbState = state;
-        }
-
-        public void UpdateMouse(MouseState state)
+        public override void Update()
         {
             prevMouseState = currMouseState;
-            currMouseState = state;
-        }
+            prevKbState = currKbState;
 
-        public float GetActionStrength(string action)
-        {
-            var act = this.actions.Get(action);
-
-            var strength = 0f;
-            var totalButtons = 0;
-
-            foreach (var key in act.Keys)
-            {
-                if (currKbState.IsKeyDown(key))
-                {
-                    strength += 1;
-                    totalButtons++;
-                }
-            }
-
-            foreach (var bt in act.MouseButtons)
-            {
-                if (bt == MouseButtons.Middle)
-                {
-                    strength += currMouseState.ScrollWheelValue - prevMouseState.ScrollWheelValue;
-                    totalButtons++;
-                }
-                else if (currMouseState.IsButtonDown(bt))
-                {
-                    strength += 1;
-                    totalButtons++;
-                }
-            }
-
-            // TODO: Gamepad
-
-            return strength / totalButtons;
-        }
-
-        public Vector2 GetMousePosition()
-        {
-            var mat = Scaler.Instance.ScaleMatrix(
-                new TextureSlice(
-                    0,
-                    0,
-                    game.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                    game.GraphicsDevice.PresentationParameters.BackBufferHeight
-                ),
-                new TextureSlice(Point.Zero, scene.Size)
-            );
-
-            return mat.Invert()
-                      .Transform(new Vector2(currMouseState.Position.X, currMouseState.Y));
-        }
-
-        public bool IsActionDown(string action)
-        {
-            return this.IsActionDown(action, currKbState, currMouseState);
-        }
-
-        public bool IsActionDown(string action, KeyboardState kState, MouseState mState)
-        {
-            var act = this.actions.Get(action);
-
-            foreach (var key in act.Keys)
-            {
-                if (kState.IsKeyUp(key))
-                {
-                    return false;
-                }
-            }
-
-            foreach (var mb in act.MouseButtons)
-            {
-                if (mState.IsButtonUp(mb))
-                {
-                    return false;
-                }
-            }
-
-            // TODO: Gamepad buttons
-
-            return true;
-        }
-
-        public bool IsActionUp(string action)
-        {
-            return this.IsActionUp(action, currKbState, currMouseState);
-        }
-
-        public bool IsActionUp(string action, KeyboardState kState, MouseState mState)
-        {
-            return !this.IsActionDown(action, kState, mState);
-        }
-
-        public bool IsActionPressed(string action)
-        {
-            return this.IsActionUp(action, prevKbState, prevMouseState) &&
-                   this.IsActionDown(action, currKbState, currMouseState);
-        }
-
-        public bool IsActionReleased(string action)
-        {
-            return this.IsActionDown(action, prevKbState, prevMouseState) &&
-                   this.IsActionUp(action, currKbState, currMouseState);
+            currMouseState = Mouse.GetState();
+            currKbState = Keyboard.GetState();
         }
     }
 }

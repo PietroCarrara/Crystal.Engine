@@ -48,40 +48,6 @@ namespace Crystal.Engine.Config.Parsers
                             throw new Exception($"Unknown scaling strategy: {root["scale"].Val().String()}");
                     }
                 }
-
-                if (root.Children.ContainsKey("actions"))
-                {
-                    foreach (var actionPair in root["actions"].Map())
-                    {
-                        var name = actionPair.Key.Val().String();
-                        var yamlKeys = actionPair.Value;
-
-                        String[] keys;
-
-                        switch (yamlKeys.NodeType)
-                        {
-                            // Single key
-                            case YamlNodeType.Scalar:
-                                keys = new string[] { yamlKeys.Val().String() };
-                                break;
-
-                            // Many keys
-                            case YamlNodeType.Sequence:
-                                keys = yamlKeys.Seq().Select(n => n.Val().String()).ToArray();
-                                break;
-                            
-                            default:
-                                throw new YamlException(
-                                    yamlKeys.Start,
-                                    yamlKeys.End,
-                                    "Expected a sequence or value node, but got none!"
-                                );
-                        }
-
-                        var action = CrystalInputAction.ParseAction(keys);
-                        config.Actions.Add(action, name);
-                    }
-                }
             }
 
             return config;

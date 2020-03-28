@@ -6,7 +6,6 @@ namespace Crystal.Engine.Config
 {
     public struct CrystalConfig
     {
-        public ActionPool Actions;
         public string MainScene;
         public string Project;
         public ScaleStrategy ScaleStrategy;
@@ -27,7 +26,6 @@ namespace Crystal.Engine.Config
         {
             get => new CrystalConfig
             {
-                Actions = new ActionPool(),
                 MainScene = "main",
                 Project = "",
                 ScaleStrategy = ScaleStrategy.LetterBoxing,

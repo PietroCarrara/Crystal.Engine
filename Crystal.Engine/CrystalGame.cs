@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using Crystal.Framework;
 using Crystal.Framework.Graphics;
 using Crystal.Framework.LowLevel;
+using Crystal.Engine.Input;
 using Crystal.Engine.Graphics;
 using Crystal.Engine.SceneUtil;
 using Crystal.Engine.Factories;
-using Crystal.Engine.Backends.MonoGame;
 using Crystal.Engine.Backends.MonoGame.Wrappers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -48,7 +48,8 @@ namespace Crystal.Engine
             // Initialize Crystal
             CrystalInitialization.Execute(
                 new CrystalCanvasFactory(GraphicsDevice, Window),
-                ScalerFactory.FromStrategy(Config.ScaleStrategy)
+                ScalerFactory.FromStrategy(Config.ScaleStrategy),
+                new CrystalInput()
             );
 
             var scene = Scenes.Peek();
