@@ -19,11 +19,11 @@ namespace Crystal.Engine.UI.Themes
         public NinePatchImage PanelBackground => this.panelBackgrounds["blue"];
 
         public ButtonTheme ButtonTheme => this.ButtonThemes["blue"];
-        
+
         public Dictionary<string, IFont> Fonts => fonts;
         public Dictionary<string, NinePatchImage> PanelBackgrounds => panelBackgrounds;
         public Dictionary<string, ButtonTheme> ButtonThemes => buttonThemes;
-        
+
         public void Load(IContentManager cm)
         {
             this.fonts = new Dictionary<string, IFont>();
@@ -48,8 +48,7 @@ namespace Crystal.Engine.UI.Themes
                     (7, 7),
                     (92, 7),
                     (7, 92),
-                    (92, 92),
-                    (25, 25)
+                    (92, 92)
                 )
             );
 
@@ -60,14 +59,12 @@ namespace Crystal.Engine.UI.Themes
                     new ThreePatchImage(
                         cm.Load<IDrawable>("engine://Themes/kenney/Blue/blue_button"),
                         6,
-                        42,
-                        20
+                        42
                     ),
                     new ThreePatchImage(
                         cm.Load<IDrawable>("engine://Themes/kenney/Blue/blue_button_hover"),
                         6,
-                        42,
-                        20
+                        42
                     )
                 )
             );
