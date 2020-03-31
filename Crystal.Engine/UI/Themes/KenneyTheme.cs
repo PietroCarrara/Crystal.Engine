@@ -11,18 +11,21 @@ namespace Crystal.Engine.UI.Themes
         private Dictionary<string, IFont> fonts;
         private Dictionary<string, NinePatchImage> panelBackgrounds;
         private Dictionary<string, ButtonTheme> buttonThemes;
+        private Dictionary<string, SliderTheme> sliderThemes;
 
-        public IFont SmallFont => this.fonts["Kenvector thin 12"];
-        public IFont MediumFont => this.fonts["Kenvector thin 36"];
-        public IFont BigFont => this.fonts["Kenvector thin 72"];
+        public IFont SmallFont => fonts["Kenvector thin 12"];
+        public IFont MediumFont => fonts["Kenvector thin 36"];
+        public IFont BigFont => fonts["Kenvector thin 72"];
 
-        public NinePatchImage PanelBackground => this.panelBackgrounds["blue"];
+        public NinePatchImage PanelBackground => panelBackgrounds["blue"];
 
-        public ButtonTheme ButtonTheme => this.ButtonThemes["blue"];
+        public ButtonTheme ButtonTheme => ButtonThemes["blue"];
+        public SliderTheme SliderTheme => sliderThemes["blue"];
 
         public Dictionary<string, IFont> Fonts => fonts;
         public Dictionary<string, NinePatchImage> PanelBackgrounds => panelBackgrounds;
         public Dictionary<string, ButtonTheme> ButtonThemes => buttonThemes;
+        public Dictionary<string, SliderTheme> SliderThemes => sliderThemes;
 
         public void Load(IContentManager cm)
         {
@@ -66,6 +69,15 @@ namespace Crystal.Engine.UI.Themes
                         6,
                         42
                     )
+                )
+            );
+
+            this.sliderThemes = new Dictionary<string, SliderTheme>();
+            this.sliderThemes.Add(
+                "blue",
+                new SliderTheme(
+                    cm.Load<IDrawable>("engine://Themes/kenney/Blue/blue_slider_down"),
+                    cm.Load<IDrawable>("engine://Themes/kenney/Grey/slider")
                 )
             );
         }

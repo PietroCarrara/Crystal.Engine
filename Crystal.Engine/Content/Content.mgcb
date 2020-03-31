@@ -49,6 +49,18 @@
 /processorParam:TextureFormat=Color
 /build:Themes/kenney/Blue/blue_panel.png
 
+#begin Themes/kenney/Blue/blue_slider_down.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Themes/kenney/Blue/blue_slider_down.png
+
 #begin Themes/kenney/Font/kenvector_future_thin_12.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -69,4 +81,16 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:Themes/kenney/Font/kenvector_future_thin_72.spritefont
+
+#begin Themes/kenney/Grey/slider.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Themes/kenney/Grey/slider.png
 
