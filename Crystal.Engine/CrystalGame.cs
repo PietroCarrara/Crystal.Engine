@@ -49,7 +49,7 @@ namespace Crystal.Engine
             CrystalInitialization.Execute(
                 new CrystalCanvasFactory(GraphicsDevice, Window),
                 ScalerFactory.FromStrategy(Config.ScaleStrategy),
-                new CrystalInput()
+                new CrystalInput(this.Window)
             );
 
             var scene = Scenes.Peek();
