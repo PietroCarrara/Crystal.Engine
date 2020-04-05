@@ -1,8 +1,8 @@
 using System.Numerics;
 using Crystal.Framework.UI;
 using Crystal.Framework.Graphics;
-using Crystal.Engine.Backends.MonoGame;
 using Microsoft.Xna.Framework.Graphics;
+using Crystal.Framework;
 using CrystalSampler = Crystal.Framework.Graphics.SamplerState;
 using MGVec2 = Microsoft.Xna.Framework.Vector2;
 using Matrix = Microsoft.Xna.Framework.Matrix;
@@ -27,7 +27,7 @@ namespace Crystal.Engine.Graphics
             CrystalSampler samplerState = CrystalSampler.LinearClamp)
         {
             oldViewport = spriteBatch.GraphicsDevice.Viewport;
-            
+
             spriteBatch.GraphicsDevice.SetRenderTarget(target.ToMonoGame());
 
             if (viewport.HasValue)
@@ -42,13 +42,19 @@ namespace Crystal.Engine.Graphics
             }
 
             spriteBatch.Begin(
+                sortMode: SpriteSortMode.Immediate,
                 transformMatrix: matrix,
-                samplerState: samplerState.ToMonogame()
+                samplerState: samplerState.ToMonogame(),
+                rasterizerState: new RasterizerState
+                {
+                    ScissorTestEnable = true,
+                }
             );
         }
 
         public void Draw(IDrawable texture,
                          Vector2 position,
+                         Color color,
                          float delta,
                          Vector2? origin = null,
                          float rotation = 0,
@@ -68,7 +74,7 @@ namespace Crystal.Engine.Graphics
                 tex,
                 position.ToMonoGame(),
                 sourceRectangle?.ToMonoGame(),
-                Microsoft.Xna.Framework.Color.White,
+                color.ToMonoGame(),
                 rotation,
                 orig.ToMonoGame(),
                 scale.HasValue ? scale.Value.ToMonoGame() : Vector2.One.ToMonoGame(),
@@ -79,6 +85,7 @@ namespace Crystal.Engine.Graphics
 
         public void Draw(IDrawable texture,
                          TextureSlice destinationRectangle,
+                         Color color,
                          float deltaTime,
                          Vector2? origin = null,
                          float rotation = 0,
@@ -97,7 +104,7 @@ namespace Crystal.Engine.Graphics
                 tex,
                 destinationRectangle.ToMonoGame(),
                 sourceRectangle?.ToMonoGame(),
-                Microsoft.Xna.Framework.Color.White,
+                color.ToMonoGame(),
                 rotation,
                 orig.ToMonoGame(),
                 SpriteEffects.None,
@@ -105,23 +112,44 @@ namespace Crystal.Engine.Graphics
             );
         }
 
-        public void DrawString(IFont font, Vector2 position, string text, Vector2? scale = null, float rotation = 0)
+        public void DrawString(IFont font,
+                               Vector2 position,
+                               Color color,
+                               string text,
+                               Vector2? scale = null,
+                               TextureSlice? sourceRectangle = null,
+                               float rotation = 0)
         {
             var fon = font.ToMonoGame();
             var pos = position.ToMonoGame();
             var scl = scale.HasValue ? scale.Value.ToMonoGame() : MGVec2.One;
 
+            var rec = spriteBatch.GraphicsDevice.ScissorRectangle;
+            if (sourceRectangle.HasValue)
+            {
+                var scaledRect = sourceRectangle.Value;
+                scaledRect = new TextureSlice(
+                    (Point)(sourceRectangle.Value.TopLeft * scl.ToCrystal()),
+                    (int)(sourceRectangle.Value.Width * scl.X),
+                    (int)(sourceRectangle.Value.Height * scl.Y)
+                );
+
+                spriteBatch.GraphicsDevice.ScissorRectangle = scaledRect.ToMonoGame();
+            }
+
             this.spriteBatch.DrawString(
                 fon,
                 text,
                 pos,
-                Microsoft.Xna.Framework.Color.Black,
+                color.ToMonoGame(),
                 rotation,
                 MGVec2.One,
                 scl,
                 SpriteEffects.None,
                 0
             );
+
+            spriteBatch.GraphicsDevice.ScissorRectangle = rec;
         }
 
         public void EndDraw()

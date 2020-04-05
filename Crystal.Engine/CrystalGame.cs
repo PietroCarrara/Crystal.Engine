@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonogameVector2 = Microsoft.Xna.Framework.Vector2;
 using CrystalPoint = Crystal.Framework.Point;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace Crystal.Engine
 {
