@@ -1,8 +1,7 @@
 using System;
 using System.IO;
-using System.Collections.Generic;
 
-namespace Crystal.Engine.SceneUtil.Loaders
+namespace Crystal.Engine.Scene.Loaders
 {
     public static class SceneLoader
     {
@@ -17,18 +16,6 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 default:
                     throw new Exception($"File type \"{ext}\" not recognized!");
             }
-        }
-
-        public static List<SceneInitializer> FromDirectoryPath(string path)
-        {
-            var res = new List<SceneInitializer>();
-
-            foreach (var file in Directory.GetFiles(path))
-            {
-                res.Add(SceneLoader.FromFilePath(file));    
-            }
-
-            return res;
         }
     }
 }

@@ -1,11 +1,6 @@
-using System;
 using System.Linq;
 using System.IO;
-using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
-using Crystal.Engine.Input;
-using Crystal.Engine.Graphics;
-using Crystal.Engine.Backends.Yaml;
 
 namespace Crystal.Engine.Config.Parsers
 {
@@ -35,18 +30,6 @@ namespace Crystal.Engine.Config.Parsers
                 if (root.Children.ContainsKey("project"))
                 {
                     config.Project = root["project"].Val().String();
-                }
-
-                if (root.Children.ContainsKey("scale"))
-                {
-                    switch (root["scale"].Val().String())
-                    {
-                        case "letterboxing":
-                            config.ScaleStrategy = ScaleStrategy.LetterBoxing;
-                            break;
-                        default:
-                            throw new Exception($"Unknown scaling strategy: {root["scale"].Val().String()}");
-                    }
                 }
             }
 

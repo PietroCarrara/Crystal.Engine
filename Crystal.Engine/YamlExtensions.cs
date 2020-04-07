@@ -3,9 +3,9 @@ using System;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 
-namespace Crystal.Engine.Backends.Yaml
+namespace Crystal.Engine
 {
-    internal static class YamlExtensions
+    public static class YamlExtensions
     {
         public static YamlMappingNode Map(this YamlNode self)
         {

@@ -1,135 +1,76 @@
-using System.Collections.Generic;
 using System;
+using System.Linq;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Numerics;
+using Crystal.Framework;
 using Crystal.Framework.UI;
-using Microsoft.Xna.Framework.Input;
-using Button = Crystal.Framework.Buttons;
-using GameWindow = Microsoft.Xna.Framework.GameWindow;
-using TextInputEventArgs = Microsoft.Xna.Framework.TextInputEventArgs;
+using Crystal.Engine.SFML;
+using SFML.Window;
 
 namespace Crystal.Engine.Input
 {
     public class CrystalInput : Framework.Input
     {
-        private KeyboardState prevKbState, currKbState;
-        private MouseState prevMouseState, currMouseState;
+        /// <summary>
+        /// Saves, for each key, if it was down last frame
+        /// </summary>
+        private Dictionary<Keyboard.Key, bool> previousState = new Dictionary<Keyboard.Key, bool>();
 
-        // Buffers to handle text input events
-        private List<TextInputData> textPrimaryBuffer = new List<TextInputData>(),
-                                    textSecondaryBuffer = new List<TextInputData>();
+        /// <summary>
+        /// Collection of all keyboard keys
+        /// </summary>
+        private readonly ReadOnlyCollection<Keyboard.Key> keyboardKeys;
 
-        // Buffers to handle keys input events
-        private List<KeyInputData> controlPrimaryBuffer = new List<KeyInputData>(),
-                                   controlSecondaryBuffer = new List<KeyInputData>();
+        public override Vector2 MousePosition => Mouse.GetPosition().ToCrystal();
 
-        private KeyRepeater repeater;
-
-        public override Vector2 MousePosition => currMouseState.Position.ToVector2().ToCrystal();
-
-        public override bool IsButtonDown(Button button) => buttonDown(button, currKbState, currMouseState);
-
-        public override bool WasButtonDown(Button button) => buttonDown(button, prevKbState, prevMouseState);
-
-        public CrystalInput(GameWindow window)
+        public CrystalInput()
         {
-            window.TextInput += this.onText;
+            // Store the keyboard keys
+            var keys = new List<Keyboard.Key>();
+            keys.AddRange(((Keyboard.Key[])Enum.GetValues(typeof(Keyboard.Key))).Distinct());
+            this.keyboardKeys = keys.AsReadOnly();
 
-            this.repeater = new KeyRepeater(new List<Keys>
+            // Initialize each key as being up
+            foreach (var key in keyboardKeys)
             {
-                Keys.Left,
-                Keys.Right,
-                Keys.Up,
-                Keys.Down,
-            }, 0.5f, 20);
-        }
-
-        public override IEnumerable<TextInputData> GetText()
-        {
-            return textPrimaryBuffer;
+                previousState.Add(key, false);
+            }
         }
 
         public override IEnumerable<KeyInputData> GetKeysPressed()
         {
-            return controlPrimaryBuffer;
+            throw new System.NotImplementedException();
         }
 
         public override IEnumerable<KeyInputData> GetKeysReleased()
         {
-            // TODO: Implement
-            return new KeyInputData[0];
+            throw new System.NotImplementedException();
         }
 
-        public override void Update(float delta)
+        public override IEnumerable<TextInputData> GetText()
         {
-            // Swap and clear text buffers
-            var tmpTextBuf = textPrimaryBuffer;
-            textPrimaryBuffer = textSecondaryBuffer;
-            textSecondaryBuffer = tmpTextBuf;
-            textSecondaryBuffer.Clear();
-
-            // Swap and clear control buffers
-            var tmpControlBuf = controlPrimaryBuffer;
-            controlPrimaryBuffer = controlSecondaryBuffer;
-            controlSecondaryBuffer = tmpControlBuf;
-            controlSecondaryBuffer.Clear();
-
-            prevMouseState = currMouseState;
-            prevKbState = currKbState;
-
-            currMouseState = Mouse.GetState();
-            currKbState = Keyboard.GetState();
-
-            foreach (var key in this.repeater.Update(currKbState, delta))
-            {
-                this.controlSecondaryBuffer.Add(new KeyInputData(key.ToCrystal()));
-            }
+            throw new System.NotImplementedException();
         }
 
-        private bool buttonDown(Button button, KeyboardState keyboard, MouseState mouse)
+        public override bool IsButtonDown(Buttons button)
         {
-            var bt = button.ToMonoGame();
-
-            // Key found
-            if (bt != Keys.None)
-            {
-                return keyboard.IsKeyDown(bt);
-            }
-            // Key not found, probably a mouse button
-            else
-            {
-                switch(button)
-                {
-                    case Button.MouseLeft:
-                        return mouse.LeftButton == ButtonState.Pressed;
-                    case Button.MouseRight:
-                        return mouse.RightButton == ButtonState.Pressed;
-                    case Button.MouseMiddle:
-                        return mouse.MiddleButton == ButtonState.Pressed;
-                    case Button.MouseButton4:
-                        return mouse.XButton1 == ButtonState.Pressed;
-                    case Button.MouseButton5:
-                        return mouse.XButton2 == ButtonState.Pressed;
-                    case Button.MouseButton6:
-                        throw new NotImplementedException();
-                    case Button.MouseButton7:
-                        throw new NotImplementedException();
-                    case Button.MouseButton8:
-                        throw new NotImplementedException();
-                    default:
-                        throw new Exception($"Could not locate button ${button}!");
-                }
-            }
+            return Keyboard.IsKeyPressed(button.ToSFML());
         }
 
-        private void onText(object sender, TextInputEventArgs e)
+        public override bool WasButtonDown(Buttons button)
         {
-            if (char.IsControl(e.Character))
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Saves the current state as being the previous frame
+        /// </summary>
+        public void AdvanceState()
+        {
+            foreach (var key in keyboardKeys)
             {
-                this.controlSecondaryBuffer.Add(new KeyInputData(e.Key.ToCrystal()));
-            }
-            else
-            {
-                this.textSecondaryBuffer.Add(new TextInputData(e.Character, e.Key.ToCrystal()));
+                previousState[key] = Keyboard.IsKeyPressed(key);
             }
         }
     }

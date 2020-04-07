@@ -1,118 +1,102 @@
 using System;
-using Crystal.Engine.Config;
 using System.Collections.Generic;
-using Crystal.Framework;
-using Crystal.Framework.Graphics;
-using Crystal.Framework.LowLevel;
+using SFML.Graphics;
+using SFML.Window;
+using SFML.System;
+using Crystal.Engine.Config;
 using Crystal.Engine.Input;
-using Crystal.Engine.Graphics;
-using Crystal.Engine.SceneUtil;
-using Crystal.Engine.Factories;
-using Crystal.Engine.Backends.MonoGame.Wrappers;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonogameVector2 = Microsoft.Xna.Framework.Vector2;
-using CrystalPoint = Crystal.Framework.Point;
-using Color = Microsoft.Xna.Framework.Color;
+using Crystal.Engine.Content;
 
 namespace Crystal.Engine
 {
-    public sealed class CrystalGame : BaseGame
+    public class CrystalGame
     {
-        public readonly CrystalConfig Config;
-        public Stack<Scene> Scenes { get; private set; } = new Stack<Scene>();
+        public static CrystalGame Instance { get; private set; }
 
-        public new CrystalContentManager Content;
+        private CrystalConfig config;
+        private Stack<Framework.Scene> scenes = new Stack<Framework.Scene>();
 
-        private readonly string MainScene;
+        public RenderWindow Window { get; private set; }
 
         public CrystalGame(CrystalConfig config)
         {
-            this.Config = config;
-
-            this.MainScene = this.Config.MainScene;
-
-            this.Scenes.Push(
-                new CrystalScene(this.MainScene, this)
-            );
-
-            this.Content = new CrystalContentManager(base.Content);
-
-            this.Window.Title = config.Project;
-            this.Window.AllowUserResizing = true;
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-
-            // Initialize Crystal
-            CrystalInitialization.Execute(
-                new CrystalCanvasFactory(GraphicsDevice, Window),
-                ScalerFactory.FromStrategy(Config.ScaleStrategy),
-                new CrystalInput(this.Window)
-            );
-
-            var scene = Scenes.Peek();
-
-            scene.Load();
-        }
-
-        public override void Update(float delta)
-        {
-            Scene scene;
-
-            if (Scenes.TryPeek(out scene))
+            if (Instance != null)
             {
-                scene.Update(delta);
+                throw new Exception("Can't create more than one game object!");
+            }
+
+            Instance = this;
+            this.config = config;
+        }
+
+        public void Run()
+        {
+            var clock = new Clock();
+            var input = new CrystalInput();
+            var content = new ContentManager();
+
+            this.Window = new RenderWindow(new VideoMode(800, 600), config.Project);
+
+            this.PushScene(content.Load<Framework.Scene>(config.MainScene));
+
+            while (Window.IsOpen)
+            {
+                Window.DispatchEvents();
+
+                var delta = clock.Restart().AsSeconds();
+
+                this.update(delta, input);
+                this.render(delta);
+
+                Window.Display();
+            }
+        }
+
+        public void PushScene(Framework.Scene scene)
+        {
+            this.scenes.Push(scene);
+        }
+
+        public void PopScene()
+        {
+            if (this.scenes.TryPop(out var scene))
+            {
+                scene.Dispose();
             }
             else
             {
-                this.Exit();
+                this.close();
             }
         }
 
-        public override void Render(SpriteBatch sp, float delta)
+        private void update(float delta, CrystalInput input)
         {
-#if DEBUG
-            this.Window.Title = $"{this.Config.Project} [{Math.Round(1 / delta)} FPS]";
-#endif
-
-            Scene scene;
-
-            if (Scenes.TryPeek(out scene))
+            if (scenes.TryPeek(out var scene))
             {
-                scene.Render(delta);
-
-                this.GraphicsDevice.Clear(Color.CornflowerBlue);
-
-                foreach (var canvas in scene.Canvases.Visible)
-                {
-                    var tex = canvas.ToMonoGame();
-
-                    var targetRect = Scaler.Instance.Scale(
-                        new TextureSlice(
-                            0,
-                            0,
-                            this.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                            this.GraphicsDevice.PresentationParameters.BackBufferHeight
-                        ),
-                        new TextureSlice(CrystalPoint.Zero, canvas.Size)
-                    ).ToMonoGame();
-
-                    sp.Begin();
-                    sp.Draw(
-                        tex,
-                        targetRect,
-                        null,
-                        Color.White,
-                        0,
-                        MonogameVector2.Zero,
-                        SpriteEffects.None,
-                        0);
-                    sp.End();
-                }
+                scene.Update(delta, input);
             }
+            else
+            {
+                Window.Close();
+            }
+        }
+
+        private void render(float delta)
+        {
+            if (scenes.TryPeek(out var scene))
+            {
+                // TODO: Render
+                // scene.Render(delta, drawer);
+            }
+            else
+            {
+                Window.Close();
+            }
+        }
+
+        private void close()
+        {
+            Window.Close();
         }
     }
 }

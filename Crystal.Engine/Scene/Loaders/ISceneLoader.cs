@@ -1,4 +1,4 @@
-namespace Crystal.Engine.SceneUtil.Loaders
+namespace Crystal.Engine.Scene.Loaders
 {
     public interface ISceneLoader
     {

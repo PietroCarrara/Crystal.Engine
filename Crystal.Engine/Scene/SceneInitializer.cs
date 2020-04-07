@@ -1,111 +1,81 @@
+using System.Collections;
 using System;
 using System.Linq;
 using System.Reflection;
 using System.Globalization;
 using System.Collections.Generic;
 using Crystal.Framework;
-using Crystal.Engine.Input;
-using Crystal.Engine.Graphics;
-using Crystal.Engine.UI.Themes;
+using  Crystal.Engine.Content;
 
-namespace Crystal.Engine.SceneUtil
+namespace Crystal.Engine.Scene
 {
     public class SceneInitializer
     {
-        public static Dictionary<string, SceneInitializer> Initializers { get; private set; }
-            = new Dictionary<string, SceneInitializer>();
+        private readonly List<ObjectModel> systems, renderers;
+        private readonly List<EntityModel> entities;
+        private readonly List<InputAction> actions;
+        private readonly Point size;
 
-        public readonly string Name;
-
-        public Dictionary<string, string> Resources = new Dictionary<string, string>();
-
-        public List<ObjectModel> Systems = new List<ObjectModel>();
-
-        public List<ObjectModel> Renderers = new List<ObjectModel>();
-
-        public List<EntityModel> Entities = new List<EntityModel>();
-
-        public List<InputAction> Actions = new List<InputAction>();
-
+        // TODO: Rethink
         /// <summary>
         /// The fully classified name of the theme class that will
         /// be used as the scene default UI theme
         /// </summary>
         public string ThemeClass = "";
 
-        public SceneInitializer(string name)
+        public SceneInitializer(Point size,
+                                List<ObjectModel> systems,
+                                List<ObjectModel> renderers,
+                                List<EntityModel> entities,
+                                List<InputAction> actions)
         {
-            this.Name = name;
-
-            Initializers.Add(name, this);
+            this.size = size;
+            this.systems = systems;
+            this.renderers = renderers;
+            this.entities = entities;
+            this.actions = actions;
         }
 
-        /// <summary>
-        /// Initializes a scene
-        /// </summary>
-        /// <param name="game">The game</param>
-        /// <param name="scene">The scene to be initalized</param>
-        public void Initialize(CrystalGame game, Scene scene)
+        public IEnumerable<ISystem> GetSystems(ContentManager cm)
         {
-            // Load resources
-            foreach (var res in this.Resources)
+            foreach (var systemModel in systems)
             {
-                scene.AddResource(
-                    res.Key,
-                    game.Content.Load<object>(res.Value)
-                );
+                yield return (ISystem)loadObject(systemModel, cm);
             }
+        }
 
-            // Add systems
-            foreach (var system in this.Systems)
+        public IEnumerable<IRenderer> GetRenderers(ContentManager cm)
+        {
+            foreach (var rendererModel in renderers)
             {
-                var s = loadObject(system, scene);
-                scene.Add((ISystem)s);
+                yield return (IRenderer)loadObject(rendererModel, cm);
             }
+        }
 
-            // Add renderers
-            foreach (var renderer in this.Renderers)
+        public IEnumerable<IEntity> GetEntities(ContentManager cm)
+        {
+            foreach (var entityModel in entities)
             {
-                var r = loadObject(renderer, scene);
-                scene.Add((IRenderer)r);
-            }
-
-            // Create entities
-            foreach (var entity in this.Entities)
-            {
-                var e = scene.Entity(entity.Name);
-
-                foreach (var component in entity.Components)
+                var e = new Entity(entityModel.Name);
+                foreach (var componentModel in entityModel.Components)
                 {
-                    var c = (IComponent)loadObject(component, scene);
-
-                    e.Add(c);
+                    e.Add((IComponent)loadObject(componentModel, cm));
                 }
+                yield return e;
             }
-
-            // Add Actions
-            foreach (var action in this.Actions)
-            {
-                scene.Actions.Add(action);
-            }
-
-            // TODO: The rest of this initialization should be done with Crystal.Framework.LowLevel
-
-            // Initialize the game drawer
-            scene.Drawer = new CrystalDrawer(game);
-
-            scene.Content = game.Content;
-
-            // TODO: Load named theme
-            scene.Theme = this.ThemeClass == "" ? new KenneyTheme() : null;
-            scene.Theme.Load(scene.Content);
-
-            // Call the user-defined code
-            // for system initialization
-            scene.Initialize();
         }
 
-        private object loadObject(ObjectModel o, Scene s)
+        public IEnumerable<InputAction> GetActions()
+        {
+            return this.actions;
+        }
+
+        public Point GetSize()
+        {
+            return this.size;
+        }
+
+        private object loadObject(ObjectModel o, ContentManager cm)
         {
             try
             {
@@ -118,18 +88,17 @@ namespace Crystal.Engine.SceneUtil
 
                     throw new Exception("Invalid number of arguments to enum!");
                 }
-                
+
                 return Activator.CreateInstance(
                     o.Type,
                     BindingFlags.CreateInstance |
                     BindingFlags.Public |
                     BindingFlags.Instance |
-                    BindingFlags.OptionalParamBinding |
-                    BindingFlags.CreateInstance,
+                    BindingFlags.OptionalParamBinding,
                     null,
-                    loadModels(
+                    loadObjects(
                         o.CtorArgs,
-                        s
+                        cm
                     ),
                     CultureInfo.CurrentCulture
                 );
@@ -145,7 +114,7 @@ namespace Crystal.Engine.SceneUtil
         /// Instantiates objects from ObjectModels inside the arguments
         /// Also loads references to scene resources
         /// </summary>
-        private object[] loadModels(object[] args, Scene scene)
+        private object[] loadObjects(object[] args, ContentManager cm)
         {
             var res = new object[args.Length];
 
@@ -154,14 +123,14 @@ namespace Crystal.Engine.SceneUtil
                 // args[i] is a object we have to build
                 if (args[i] is ObjectModel c)
                 {
-                    res[i] = loadObject(c, scene);
+                    res[i] = loadObject(c, cm);
 
                     // Edge case: if the object was
                     // of type Resource, we have to
                     // load it instead
                     if (res[i] is Resource r)
                     {
-                        res[i] = scene.Resource<object>(r.Name);
+                        res[i] = cm.Load(r.Path);
                     }
                 }
                 // args[i] is a primitive
@@ -178,22 +147,20 @@ namespace Crystal.Engine.SceneUtil
         {
             var res = "";
 
-            res += $"Name:\n  - {this.Name}\n";
-
             res += "\nSystems:\n";
-            foreach (var sys in this.Systems)
+            foreach (var sys in this.systems)
             {
                 res += $"  - {sys}\n";
             }
 
             res += "\nRenderers:\n";
-            foreach (var rend in this.Renderers)
+            foreach (var rend in this.renderers)
             {
                 res += $"  - {rend}\n";
             }
 
             res += "\nEntities:\n";
-            foreach (var e in this.Entities)
+            foreach (var e in this.entities)
             {
                 res += $"  - {e.Name}\n";
                 foreach (var component in e.Components)
@@ -252,27 +219,21 @@ namespace Crystal.Engine.SceneUtil
         }
     }
 
-}
-
-// Make the resource type accessible
-// in a namespace that makes sense
-namespace Crystal.Engine
-{
     /// <summary>
-    /// Represents a reference to a scene resource
+    /// Represents a reference to a resource
     /// </summary>
     public struct Resource
     {
-        public string Name;
+        public readonly string Path;
 
-        public Resource(string name)
+        public Resource(string path)
         {
-            this.Name = name;
+            this.Path = path;
         }
 
         public override string ToString()
         {
-            return $"Scene.Resource(\"{this.Name}\")";
+            return $"Resource(\"{this.Path}\")";
         }
     }
 }

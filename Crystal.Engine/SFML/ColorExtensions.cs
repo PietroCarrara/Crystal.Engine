@@ -1,13 +1,13 @@
+using SFMLColor = SFML.Graphics.Color;
 using CrystalColor = Crystal.Framework.Color;
-using Microsoft.Xna.Framework;
 
-namespace Crystal.Engine
+namespace Crystal.Engine.SFML
 {
     public static class ColorExtensions
     {
-        public static Color ToMonoGame(this CrystalColor self)
+        public static SFMLColor ToSFML(this CrystalColor self)
         {
-            return new Color(
+            return new SFMLColor(
                 self.R,
                 self.G,
                 self.B,
@@ -15,7 +15,7 @@ namespace Crystal.Engine
             );
         }
 
-        public static CrystalColor ToCrystal(this Color self)
+        public static CrystalColor ToCrystal(this SFMLColor self)
         {
             return new CrystalColor(
                 self.R,

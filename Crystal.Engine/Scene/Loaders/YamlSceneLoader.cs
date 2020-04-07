@@ -6,9 +6,8 @@ using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 using Crystal.Framework;
 using Crystal.Engine.Reflection;
-using Crystal.Engine.Backends.Yaml;
 
-namespace Crystal.Engine.SceneUtil.Loaders
+namespace Crystal.Engine.Scene.Loaders
 {
     public class YamlSceneLoader : ISceneLoader
     {
@@ -19,16 +18,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
 
         public SceneInitializer FromText(string text)
         {
-            try
-            {
-                return this.fromText(text);
-            }
-            catch (YamlException e)
-            {
-                throw new Exception("There was an error in your YAML. It may be due " +
-                                    "to a syntax error or just a invalid structure: " +
-                                    $" {e.Message}");
-            }
+            return this.fromText(text);
         }
 
         private SceneInitializer fromText(string text)
@@ -38,18 +28,15 @@ namespace Crystal.Engine.SceneUtil.Loaders
 
             var root = yaml.Documents[0].RootNode.Map();
 
-            var initializer = new SceneInitializer(root["name"].Val().String());
+            var size = new Point(1280, 720);
+            var systems = new List<ObjectModel>();
+            var renderers = new List<ObjectModel>();
+            var entities = new List<EntityModel>();
+            var actions = new List<InputAction>();
 
-            // Add resources
-            if (root.Children.ContainsKey("resources"))
+            if (root.Children.ContainsKey("size"))
             {
-                foreach (var res in root["resources"].Map().Children)
-                {
-                    initializer.Resources.Add(
-                        res.Key.Val().String(),
-                        res.Value.Val().String()
-                    );
-                }
+                // TODO
             }
 
             // Add systems
@@ -60,7 +47,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                     switch (system.NodeType)
                     {
                         case YamlNodeType.Scalar:
-                            initializer.Systems.Add(
+                            systems.Add(
                                 new ObjectModel
                                 {
                                     Type = RegisteredTypes.GetType(system.Val().String()),
@@ -69,7 +56,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                             );
                             break;
                         case YamlNodeType.Mapping:
-                            initializer.Systems.Add(
+                            systems.Add(
                                 new ObjectModel
                                 {
                                     Type = RegisteredTypes.GetType(system.Map().First().Key.Val().String()),
@@ -90,7 +77,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                     switch (renderer.NodeType)
                     {
                         case YamlNodeType.Scalar:
-                            initializer.Renderers.Add(
+                            renderers.Add(
                                 new ObjectModel
                                 {
                                     Type = RegisteredTypes.GetType(renderer.Val().String()),
@@ -99,7 +86,7 @@ namespace Crystal.Engine.SceneUtil.Loaders
                             );
                             break;
                         case YamlNodeType.Mapping:
-                            initializer.Renderers.Add(
+                            renderers.Add(
                                 new ObjectModel
                                 {
                                     Type = RegisteredTypes.GetType(renderer.Map().First().Key.Val().String()),
@@ -111,16 +98,18 @@ namespace Crystal.Engine.SceneUtil.Loaders
                 }
             }
 
+            // Add entities
             if (root.Children.ContainsKey("entities"))
             {
                 foreach (var entity in root["entities"].Seq().Children)
                 {
                     var model = parseEntity(entity);
 
-                    initializer.Entities.Add(model);
+                    entities.Add(model);
                 }
             }
 
+            // Add actions
             if (root.Children.ContainsKey("actions"))
             {
                 foreach (var actionPair in root["actions"].Map())
@@ -151,11 +140,11 @@ namespace Crystal.Engine.SceneUtil.Loaders
                     }
 
                     var buttons = keys.Select(k => (Buttons)Enum.Parse(typeof(Buttons), k));
-                    initializer.Actions.Add(new InputAction(name, buttons.ToArray()));
+                    actions.Add(new InputAction(name, buttons.ToArray()));
                 }
             }
 
-            return initializer;
+            return new SceneInitializer(size, systems, renderers, entities, actions);
         }
 
         private EntityModel parseEntity(YamlNode node)

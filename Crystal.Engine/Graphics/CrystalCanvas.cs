@@ -1,55 +1,62 @@
 using Crystal.Framework;
 using Crystal.Framework.Graphics;
-using Color = Microsoft.Xna.Framework.Color;
-using Microsoft.Xna.Framework.Graphics;
+using Crystal.Engine.SFML;
+using SFML.Graphics;
+using SFML.Window;
 
 namespace Crystal.Engine.Graphics
 {
-    /// <summary>
-    /// A render target abstraction
-    /// </summary>
-    public class CrystalCanvas : Canvas
+    public class CrystalCanvas : IResizeableRenderTarget
     {
-        public RenderTarget2D RenderTarget { get; private set; }
-        protected GraphicsDevice graphicsDevice { get; private set; }
-        
-        public CrystalCanvas(GraphicsDevice gd)
+        private RenderTexture RenderTexture;
+        private Point maximumSize, size;
+
+        public Point Size => size;
+
+        public event IRenderTarget.SizeChangedEventHandler SizeChanged;
+
+        public CrystalCanvas(uint width, uint height)
         {
-            this.graphicsDevice = gd;
+            this.RenderTexture = new RenderTexture(width, height);
+
+            this.size = this.maximumSize = new Point((int)width, (int)height);
         }
-        
-        public override void SetSize(Point size)
+
+        public void Clear(Framework.Color color)
         {
-            base.SetSize(size);
-            
-            if (RenderTarget != null)
+            this.RenderTexture.Clear(color.ToSFML());
+        }
+
+        public void Dispose()
+        {
+            this.RenderTexture.Dispose();
+        }
+
+        public void SetSize(Point size)
+        {
+            var resize = false;
+
+            if (this.maximumSize.X < size.X)
             {
-                RenderTarget.Dispose();
+                resize = true;
+                this.maximumSize.X = size.X;
             }
 
-            this.RenderTarget = new RenderTarget2D(
-                graphicsDevice,
-                size.X,
-                size.Y,
-                false,
-                SurfaceFormat.Color,
-                DepthFormat.None,
-                0,
-                RenderTargetUsage.PreserveContents
-            );
-        }
+            if (this.maximumSize.Y < size.Y)
+            {
+                resize = true;
+                this.maximumSize.Y = size.Y;
+            }
 
-        public override void Dispose()
-        {
-            this.RenderTarget.Dispose();
-        }
+            if (resize)
+            {
+                this.RenderTexture.Dispose();
+                this.RenderTexture = new RenderTexture((uint)maximumSize.X, (uint)maximumSize.Y);
+            }
 
-        public override void Clear()
-        {
-            var rt = graphicsDevice.GetRenderTargets();
-            graphicsDevice.SetRenderTarget(this.RenderTarget);
-            graphicsDevice.Clear(Color.Transparent);
-            graphicsDevice.SetRenderTargets(rt);
+            this.size = size;
+
+            SizeChanged?.Invoke(this, size);
         }
     }
 }
