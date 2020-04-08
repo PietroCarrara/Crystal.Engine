@@ -1,5 +1,5 @@
 using SFMLColor = SFML.Graphics.Color;
-using CrystalColor = Crystal.Framework.Color;
+using CrystalColor = Crystal.Framework.Graphics.Color;
 
 namespace Crystal.Engine.SFML
 {

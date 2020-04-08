@@ -8,9 +8,9 @@ namespace Crystal.Engine.Graphics
 {
     public class CrystalCanvas : IResizeableRenderTarget
     {
-        private RenderTexture RenderTexture;
         private Point maximumSize, size;
 
+        public RenderTexture RenderTexture { get; private set; }
         public Point Size => size;
 
         public event IRenderTarget.SizeChangedEventHandler SizeChanged;
@@ -22,7 +22,7 @@ namespace Crystal.Engine.Graphics
             this.size = this.maximumSize = new Point((int)width, (int)height);
         }
 
-        public void Clear(Framework.Color color)
+        public void Clear(Framework.Graphics.Color color)
         {
             this.RenderTexture.Clear(color.ToSFML());
         }

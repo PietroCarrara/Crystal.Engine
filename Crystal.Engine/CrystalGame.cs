@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.Window;
 using SFML.System;
+using Crystal.Engine.SFML;
 using Crystal.Engine.Config;
 using Crystal.Engine.Input;
 using Crystal.Engine.Content;
+using Crystal.Engine.Graphics;
 
 namespace Crystal.Engine
 {
@@ -35,6 +37,7 @@ namespace Crystal.Engine
 
             var clock = new Clock();
             var input = new CrystalInput(this.Window);
+            var renderer = new CrystalRenderer();
             var content = new ContentManager();
 
             this.PushScene(content.Load<Framework.Scene>(config.MainScene));
@@ -46,10 +49,9 @@ namespace Crystal.Engine
                 var delta = clock.Restart().AsSeconds();
 
                 this.update(delta, input);
-                this.render(delta);
+                this.render(delta, renderer);
 
                 input.AdvanceState();
-                Window.Display();
             }
         }
 
@@ -82,12 +84,21 @@ namespace Crystal.Engine
             }
         }
 
-        private void render(float delta)
+        private void render(float delta, CrystalRenderer drawer)
         {
+            Window.Clear();
+
             if (scenes.TryPeek(out var scene))
             {
-                // TODO: Render
-                // scene.Render(delta, drawer);
+                scene.Render(delta, drawer);
+
+                var canvas = new Sprite(scene.Canvas.ToSFML().Texture);
+                var windowCanvas = new Sprite(scene.WindowCanvas.ToSFML().Texture);
+
+                Window.Draw(canvas);
+                Window.Draw(windowCanvas);
+
+                Window.Display();
             }
             else
             {
