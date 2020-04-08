@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 using Crystal.Framework;
+using Crystal.Framework.Graphics.Scalers;
 using Crystal.Engine.Reflection;
 
 namespace Crystal.Engine.Scene.Loaders
@@ -29,12 +30,18 @@ namespace Crystal.Engine.Scene.Loaders
             var root = yaml.Documents[0].RootNode.Map();
 
             var size = new Point(1280, 720);
+            var scaler = new LetterboxingScaler();
             var systems = new List<ObjectModel>();
             var renderers = new List<ObjectModel>();
             var entities = new List<EntityModel>();
             var actions = new List<InputAction>();
 
             if (root.Children.ContainsKey("size"))
+            {
+                // TODO
+            }
+
+            if (root.Children.ContainsKey("scaler"))
             {
                 // TODO
             }
@@ -144,7 +151,7 @@ namespace Crystal.Engine.Scene.Loaders
                 }
             }
 
-            return new SceneInitializer(size, systems, renderers, entities, actions);
+            return new SceneInitializer(size, scaler, systems, renderers, entities, actions);
         }
 
         private EntityModel parseEntity(YamlNode node)

@@ -1,11 +1,11 @@
-using System.Collections;
 using System;
 using System.Linq;
 using System.Reflection;
 using System.Globalization;
 using System.Collections.Generic;
 using Crystal.Framework;
-using  Crystal.Engine.Content;
+using Crystal.Framework.Graphics;
+using Crystal.Engine.Content;
 
 namespace Crystal.Engine.Scene
 {
@@ -15,6 +15,7 @@ namespace Crystal.Engine.Scene
         private readonly List<EntityModel> entities;
         private readonly List<InputAction> actions;
         private readonly Point size;
+        private readonly IScaler scaler;
 
         // TODO: Rethink
         /// <summary>
@@ -24,12 +25,14 @@ namespace Crystal.Engine.Scene
         public string ThemeClass = "";
 
         public SceneInitializer(Point size,
+                                IScaler scaler,
                                 List<ObjectModel> systems,
                                 List<ObjectModel> renderers,
                                 List<EntityModel> entities,
                                 List<InputAction> actions)
         {
             this.size = size;
+            this.scaler = scaler;
             this.systems = systems;
             this.renderers = renderers;
             this.entities = entities;
@@ -68,6 +71,11 @@ namespace Crystal.Engine.Scene
         public IEnumerable<InputAction> GetActions()
         {
             return this.actions;
+        }
+
+        public IScaler GetScaler()
+        {
+            return this.scaler;
         }
 
         public Point GetSize()

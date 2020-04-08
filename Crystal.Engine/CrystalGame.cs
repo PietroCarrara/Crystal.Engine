@@ -31,11 +31,11 @@ namespace Crystal.Engine
 
         public void Run()
         {
-            var clock = new Clock();
-            var input = new CrystalInput();
-            var content = new ContentManager();
-
             this.Window = new RenderWindow(new VideoMode(800, 600), config.Project);
+
+            var clock = new Clock();
+            var input = new CrystalInput(this.Window);
+            var content = new ContentManager();
 
             this.PushScene(content.Load<Framework.Scene>(config.MainScene));
 
@@ -48,6 +48,7 @@ namespace Crystal.Engine
                 this.update(delta, input);
                 this.render(delta);
 
+                input.AdvanceState();
                 Window.Display();
             }
         }

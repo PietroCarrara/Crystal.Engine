@@ -17,40 +17,52 @@ namespace Crystal.Engine.Input
         /// </summary>
         private Dictionary<Keyboard.Key, bool> previousState = new Dictionary<Keyboard.Key, bool>();
 
+        private List<Keyboard.Key> pressedKeys = new List<Keyboard.Key>(),
+                                   releasedKeys = new List<Keyboard.Key>();
+
+        private List<char> text = new List<char>();
+
         /// <summary>
         /// Collection of all keyboard keys
         /// </summary>
-        private readonly ReadOnlyCollection<Keyboard.Key> keyboardKeys;
+        private static readonly ReadOnlyCollection<Keyboard.Key> keyboardKeys;
 
-        public override Vector2 MousePosition => Mouse.GetPosition().ToCrystal();
+        public override Vector2 GetMousePositionRaw() => Mouse.GetPosition().ToCrystal();
 
-        public CrystalInput()
+        static CrystalInput()
         {
             // Store the keyboard keys
             var keys = new List<Keyboard.Key>();
             keys.AddRange(((Keyboard.Key[])Enum.GetValues(typeof(Keyboard.Key))).Distinct());
-            this.keyboardKeys = keys.AsReadOnly();
+            keyboardKeys = keys.AsReadOnly();
+        }
 
+        public CrystalInput(Window window)
+        {
             // Initialize each key as being up
             foreach (var key in keyboardKeys)
             {
                 previousState.Add(key, false);
             }
+
+            window.KeyPressed += onKeyPressed;
+            window.KeyReleased += onKeyReleased;
+            window.TextEntered += onTextEntered;
         }
 
         public override IEnumerable<KeyInputData> GetKeysPressed()
         {
-            throw new System.NotImplementedException();
+            return pressedKeys.Select(k => new KeyInputData(k.ToCrystal()));
         }
 
         public override IEnumerable<KeyInputData> GetKeysReleased()
         {
-            throw new System.NotImplementedException();
+            return releasedKeys.Select(k => new KeyInputData(k.ToCrystal()));
         }
 
         public override IEnumerable<TextInputData> GetText()
         {
-            throw new System.NotImplementedException();
+            return text.Select(c => new TextInputData(c));
         }
 
         public override bool IsButtonDown(Buttons button)
@@ -60,7 +72,7 @@ namespace Crystal.Engine.Input
 
         public override bool WasButtonDown(Buttons button)
         {
-            throw new System.NotImplementedException();
+            return previousState[button.ToSFML()];
         }
 
         /// <summary>
@@ -72,6 +84,26 @@ namespace Crystal.Engine.Input
             {
                 previousState[key] = Keyboard.IsKeyPressed(key);
             }
+
+            pressedKeys.Clear();
+            releasedKeys.Clear();
+            text.Clear();
+        }
+
+        private void onKeyPressed(object sender, KeyEventArgs args)
+        {
+            this.pressedKeys.Add(args.Code);
+            Console.WriteLine(args);
+        }
+
+        private void onKeyReleased(object sender, KeyEventArgs args)
+        {
+            this.releasedKeys.Add(args.Code);
+        }
+
+        private void onTextEntered(object sender, TextEventArgs args)
+        {
+            this.text.AddRange(args.Unicode.Where(c => !char.IsControl(c)));
         }
     }
 }

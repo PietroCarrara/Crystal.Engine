@@ -1,4 +1,5 @@
 using Crystal.Framework;
+using Crystal.Framework.Graphics;
 using Crystal.Engine.Content;
 using Crystal.Engine.Graphics;
 using Crystal.Engine.Scene.Loaders;
@@ -14,11 +15,13 @@ namespace Crystal.Engine.Scene
         public CrystalScene(CrystalGame game,
                             SceneInitializer initializer,
                             ContentManager content,
+                            IScaler scaler,
                             Point size)
         : base(size,
                content,
                new CrystalCanvas((uint)size.X, (uint)size.Y),
-               new CrystalWindowCanvas(game.Window))
+               new CrystalWindowCanvas(game.Window),
+               scaler)
         {
             this.game = game;
             this.initializer = initializer;
@@ -33,6 +36,7 @@ namespace Crystal.Engine.Scene
                 CrystalGame.Instance,
                 init,
                 content,
+                init.GetScaler(),
                 init.GetSize()
             );
             scene.Initialize();
