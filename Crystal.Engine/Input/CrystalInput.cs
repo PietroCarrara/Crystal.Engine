@@ -1,3 +1,4 @@
+using System.Text;
 using System;
 using System.Linq;
 using System.Collections.ObjectModel;
@@ -6,48 +7,52 @@ using System.Numerics;
 using Crystal.Framework;
 using Crystal.Framework.UI;
 using Crystal.Engine.SFML;
-using SFML.Window;
+using Crystal.Engine.SDL;
+using static SDL2.SDL;
 
 namespace Crystal.Engine.Input
 {
     public class CrystalInput : Framework.Input
     {
         /// <summary>
-        /// Saves, for each key, if it was down last frame
+        /// Collection of all keyboard keys
         /// </summary>
-        private Dictionary<Keyboard.Key, bool> previousState = new Dictionary<Keyboard.Key, bool>();
+        private static readonly ReadOnlyCollection<SDL_Scancode> keyboardKeys;
 
-        private List<Keyboard.Key> pressedKeys = new List<Keyboard.Key>(),
-                                   releasedKeys = new List<Keyboard.Key>();
+        /// <summary>
+        /// Saves, for each key, if it was down
+        /// </summary>
+        private Dictionary<SDL_Scancode, bool> previousState = new Dictionary<SDL_Scancode, bool>(),
+                                               currentState = new Dictionary<SDL_Scancode, bool>();
+
+        private List<SDL_Keycode> pressedKeys = new List<SDL_Keycode>(),
+                                   releasedKeys = new List<SDL_Keycode>();
 
         private List<char> text = new List<char>();
 
-        /// <summary>
-        /// Collection of all keyboard keys
-        /// </summary>
-        private static readonly ReadOnlyCollection<Keyboard.Key> keyboardKeys;
-
-        public override Vector2 GetMousePositionRaw() => Mouse.GetPosition().ToCrystal();
+        private Point mousePos;
+        public override Vector2 GetMousePositionRaw() => mousePos;
 
         static CrystalInput()
         {
             // Store the keyboard keys
-            var keys = new List<Keyboard.Key>();
-            keys.AddRange(((Keyboard.Key[])Enum.GetValues(typeof(Keyboard.Key))).Distinct());
+            var keys = new List<SDL_Scancode>();
+            keys.AddRange(((SDL_Scancode[])Enum.GetValues(typeof(SDL_Scancode))).Distinct());
             keyboardKeys = keys.AsReadOnly();
         }
 
-        public CrystalInput(Window window)
+        public CrystalInput()
         {
             // Initialize each key as being up
             foreach (var key in keyboardKeys)
             {
                 previousState.Add(key, false);
+                currentState.Add(key, false);
             }
 
-            window.KeyPressed += onKeyPressed;
-            window.KeyReleased += onKeyReleased;
-            window.TextEntered += onTextEntered;
+            SDLEventManager.KeyDown += onKeyPressed;
+            SDLEventManager.KeyUp += onKeyReleased;
+            SDLEventManager.TextInput += onTextEntered;
         }
 
         public override IEnumerable<KeyInputData> GetKeysPressed()
@@ -67,12 +72,17 @@ namespace Crystal.Engine.Input
 
         public override bool IsButtonDown(Buttons button)
         {
-            return Keyboard.IsKeyPressed(button.ToSFML());
+            return currentState[button.ToScancode()];
         }
 
         public override bool WasButtonDown(Buttons button)
         {
-            return previousState[button.ToSFML()];
+            return previousState[button.ToScancode()];
+        }
+
+        public void Update()
+        {
+            SDL_GetMouseState(out this.mousePos.X, out this.mousePos.Y);
         }
 
         /// <summary>
@@ -82,28 +92,39 @@ namespace Crystal.Engine.Input
         {
             foreach (var key in keyboardKeys)
             {
-                previousState[key] = Keyboard.IsKeyPressed(key);
+                previousState[key] = currentState[key];
+                currentState[key] = false;
             }
 
-            pressedKeys.Clear();
-            releasedKeys.Clear();
             text.Clear();
         }
 
-        private void onKeyPressed(object sender, KeyEventArgs args)
+        private void onKeyPressed(SDL_KeyboardEvent args)
         {
-            this.pressedKeys.Add(args.Code);
-            Console.WriteLine(args);
+            if (args.repeat == 0)
+            {
+                this.currentState[args.keysym.scancode] = true;
+            }
+
+            this.pressedKeys.Add(args.keysym.sym);
         }
 
-        private void onKeyReleased(object sender, KeyEventArgs args)
+        private void onKeyReleased(SDL_KeyboardEvent args)
         {
-            this.releasedKeys.Add(args.Code);
+            this.currentState[args.keysym.scancode] = false;
+            this.releasedKeys.Add(args.keysym.sym);
         }
 
-        private void onTextEntered(object sender, TextEventArgs args)
+        private void onTextEntered(SDL_TextInputEvent args)
         {
-            this.text.AddRange(args.Unicode.Where(c => !char.IsControl(c)));
+            var text = "";
+
+            unsafe
+            {
+                text = Encoding.UTF8.GetString(args.text, 32);
+            }
+
+            this.text.AddRange(text);
         }
     }
 }
